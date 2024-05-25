@@ -60,7 +60,8 @@ function setup() {
       }
     }
   } catch (e) {
-    document.getElementById('error').value = e;
+    document.getElementById('error').innerText = e.message;
+    console.dir(e.message);
   }
 }
 

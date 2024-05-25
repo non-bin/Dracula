@@ -1,12 +1,41 @@
-#container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2%;
+@media (min-width: 800px) {
+  .container {
+    grid-template-columns: auto auto !important;
+  }
+}
 
+@media (min-width: 400px) {
+  .counter {
+    font-size: 30px !important;
+  }
+}
+
+#config {
+  font-family: monospace;
+  width: 96vw;
+  height: 500pt;
+}
+
+#error {
+  color: red;
+}
+
+.container {
+  display: grid;
+  grid-template-columns: auto;
+}
+
+.controls {
+  display: grid;
+  min-height: 50vmin;
+}
+
+#screen {
+  display: grid;
+  gap: 2%;
   grid-template: auto auto / auto auto;
   background-color: #2196F3;
   padding: 10px;
-  /* aspect-ratio: 1/ 1; */
   height: 90vmin;
   width: 90vmin;
 }
@@ -16,7 +45,7 @@
   padding: 5%;
   background-color: rgba(255, 255, 255, 0.8);
   border: 1px solid rgba(0, 0, 0, 0.8);
-  font-size: 30px;
+  font-size: 20px;
   text-align: center;
 }
 

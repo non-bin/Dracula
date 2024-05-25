@@ -1,33 +1,32 @@
 var counters = {};
-var configs = {
-  'MediumHH': {
-    counters: {
-      'Phase': {
-        position: 'top',
-        phases: [
-          { name: 'Hem', max: 30 },
-          { name: 'Ankle', max: 50 },
-          { name: 'Heel Decrease', max: 15 },
-          { name: 'Heal Increase', max: 15 },
-          { name: 'Foot', max: 60 },
-          { name: 'Toe Decrease', max: 15 },
-          { name: 'Toe Increase', max: 15 },
-          { name: 'Waste Yarn' },
-        ],
-      },
-      'Total': {
-        position: 'bottom-left'
-      },
-      'Colour': {
-        position: 'bottom-right',
-        phases: [
-          { name: 'Red' },
-          { name: 'Green' },
-          { name: 'black', max: 2 }
-        ],
-        max: 3,
-      },
-    }
+var configs = {};
+var defaultConfigs = {
+  counters: {
+    'Phase': {
+      position: 'top',
+      phases: [
+        { name: 'Hem', max: 30 },
+        { name: 'Ankle', max: 50 },
+        { name: 'Heel Decrease', max: 15 },
+        { name: 'Heal Increase', max: 15 },
+        { name: 'Foot', max: 60 },
+        { name: 'Toe Decrease', max: 15 },
+        { name: 'Toe Increase', max: 15 },
+        { name: 'Waste Yarn', max: 'Inf' },
+      ],
+    },
+    'Total': {
+      position: 'bottom-left'
+    },
+    'Colour': {
+      position: 'bottom-right',
+      phases: [
+        { name: 'Red' },
+        { name: 'Green' },
+        { name: 'black', max: 2 }
+      ],
+      max: 3,
+    },
   }
 };
 
@@ -40,26 +39,32 @@ document.addEventListener('keydown', (e) => {
   }
 });
 document.getElementById('reset').addEventListener('click', () => {
-  setup(configs['MediumHH']);
+  setup();
 });
 document.addEventListener('DOMContentLoaded', () => {
-  setup(configs['MediumHH']);
+  document.getElementById('config').value = JSON.stringify(defaultConfigs, null, 2);
+  setup();
 });
 
-function setup(config) {
-  const container = document.getElementById('container');
-  container.innerHTML = '';
+function setup() {
+  try {
+    const configElement = document.getElementById('config');
+    const config = JSON.parse(configElement.value);
 
-  for (const counterName in config.counters) {
-    if (Object.hasOwnProperty.call(config.counters, counterName)) {
-      addCounter(container, counterName, config.counters[counterName]);
+    const screen = document.getElementById('screen');
+    screen.innerHTML = '';
+
+    for (const counterName in config.counters) {
+      if (Object.hasOwnProperty.call(config.counters, counterName)) {
+        addCounter(screen, counterName, config.counters[counterName]);
+      }
     }
+  } catch (e) {
+    document.getElementById('error').value = e;
   }
-
-  console.log(counters);
 }
 
-function addCounter(container, counterName, config) {
+function addCounter(screen, counterName, config) {
   counters[counterName] = config;
   config.state = { value: 0 };
   config.elements = {};
@@ -67,7 +72,7 @@ function addCounter(container, counterName, config) {
   const mainElement = document.createElement('div');
   mainElement.className = 'counter';
   if (config.position) { mainElement.classList.add(config.position); }
-  config.elements['main'] = container.appendChild(mainElement);
+  config.elements['main'] = screen.appendChild(mainElement);
 
   const nameElement = document.createElement('div');
   nameElement.className = 'counter__name';

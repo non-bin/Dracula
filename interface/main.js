@@ -29,10 +29,12 @@ let counters = {};
 */
 
 const defaultConfigs = {
+  grid: { template: '60% auto / 40% auto' },
   counters: {
     phase: {
       name: 'Phase',
-      position: 'top',
+      position: [0, 0],
+      size: [2, 1],
       phases: [
         { name: 'Hem', max: 30 },
         { name: 'Ankle', max: 50 },
@@ -46,12 +48,17 @@ const defaultConfigs = {
     },
     total: {
       name: 'Total',
+      color: 'green',
       position: 'bottom-left'
     },
     colour: {
       name: 'Colour',
       position: 'bottom-right',
-      phases: [{ name: 'Red' }, { name: 'Green' }, { name: 'black', max: 2 }],
+      phases: [
+        { name: 'Red', color: 'red' },
+        { name: 'Green', color: 'green' },
+        { name: 'Black', color: 'black', max: 2 }
+      ],
       max: 3
     }
   }
@@ -86,6 +93,8 @@ const increment = () => {
         counter.state.phase = 0;
       }
 
+      counter.elements.main.style.background =
+        counter.phases[counter.state.phase].color || counter.color || '';
       counter.state.max =
         counter.phases[counter.state.phase].max || counter.max || Infinity;
       phaseElement.textContent = counter.phases[counter.state.phase].name;
@@ -108,7 +117,7 @@ const addCounter = (screen, counterID, config) => {
   config.elements.main = screen.appendChild(mainElement);
 
   const nameElement = document.createElement('div');
-  nameElement.className = 'counter_name';
+  nameElement.classList.add('counter_text', 'counter_name');
   nameElement.textContent = config.name;
   config.elements.name = mainElement.appendChild(nameElement);
 
@@ -116,23 +125,26 @@ const addCounter = (screen, counterID, config) => {
     config.state.phase = 0;
 
     const phaseElement = document.createElement('div');
-    phaseElement.className = 'counter_phase';
+    phaseElement.classList.add('counter_text', 'counter_phase');
     phaseElement.textContent = config.phases[0].name;
     config.elements.phase = mainElement.appendChild(phaseElement);
   }
 
   const valueElement = document.createElement('div');
-  valueElement.className = 'counter_value';
+  valueElement.classList.add('counter_text', 'counter_value');
   valueElement.textContent = 0;
   config.elements.value = mainElement.appendChild(valueElement);
 
   if (config.max || config.phases?.[0]?.max) {
     config.state.max = config.phases?.[0].max || config.max || 'Inf';
     const maxElement = document.createElement('div');
-    maxElement.className = 'counter_max';
+    maxElement.classList.add('counter_text', 'counter_max');
     maxElement.textContent = `/${config.state.max}`;
     config.elements.max = mainElement.appendChild(maxElement);
   }
+
+  config.elements.main.style.background =
+    config.phases?.[config.state.phase].color || config.color || '';
 
   return config;
 };
@@ -145,6 +157,7 @@ const setup = () => {
 
     const screen = document.getElementById('screen');
     screen.innerHTML = '';
+    screen.style.gridTemplate = config.grid?.template;
 
     for (const counterID in config.counters) {
       if (Object.hasOwn(config.counters, counterID)) {

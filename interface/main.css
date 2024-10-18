@@ -10,6 +10,10 @@
   }
 }
 
+body {
+  margin: 0;
+}
+
 #config {
   font-family: monospace;
   width: 96vw;
@@ -23,21 +27,24 @@
 .container {
   display: grid;
   grid-template-columns: auto;
+  width: 100vw;
+  height: 100vh;
 }
 
-.controls {
+/* .controls {
   display: grid;
   min-height: 50vmin;
-}
+} */
 
 #screen {
   display: grid;
   gap: 2%;
-  grid-template: auto auto / auto auto;
+  grid-template: auto / auto;
   background-color: #2196F3;
   padding: 10px;
-  height: 90vmin;
-  width: 90vmin;
+  box-sizing: border-box; /* Make width and height include boarder and padding */
+  height: 100vh;
+  width: 100vw;
 }
 
 .counter {

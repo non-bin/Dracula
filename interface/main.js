@@ -1,7 +1,8 @@
 const counters = {};
 const defaultConfigs = {
   counters: {
-    Phase: {
+    phase: {
+      name: 'Phase',
       position: 'top',
       phases: [
         { name: 'Hem', max: 30 },
@@ -14,10 +15,12 @@ const defaultConfigs = {
         { name: 'Waste Yarn', max: Infinity }
       ]
     },
-    Total: {
+    total: {
+      name: 'Total',
       position: 'bottom-left'
     },
-    Colour: {
+    colour: {
+      name: 'Colour',
       position: 'bottom-right',
       phases: [{ name: 'Red' }, { name: 'Green' }, { name: 'black', max: 2 }],
       max: 3
@@ -64,8 +67,8 @@ const increment = () => {
   }
 };
 
-const addCounter = (screen, counterName, config) => {
-  counters[counterName] = config;
+const addCounter = (screen, counterID, config) => {
+  counters[counterID] = config;
   config.state = { value: 0 };
   config.elements = {};
 
@@ -77,29 +80,29 @@ const addCounter = (screen, counterName, config) => {
   config.elements.main = screen.appendChild(mainElement);
 
   const nameElement = document.createElement('div');
-  nameElement.className = 'counter__name';
-  nameElement.textContent = counterName;
+  nameElement.className = 'counter_name';
+  nameElement.textContent = config.name;
   config.elements.name = mainElement.appendChild(nameElement);
 
   if (config.phases) {
     config.state.phase = 0;
 
     const phaseElement = document.createElement('div');
-    phaseElement.className = 'counter__phase';
+    phaseElement.className = 'counter_phase';
     phaseElement.textContent = config.phases[0].name;
     config.elements.phase = mainElement.appendChild(phaseElement);
   }
 
   const valueElement = document.createElement('div');
-  valueElement.className = 'counter__value';
+  valueElement.className = 'counter_value';
   valueElement.textContent = 0;
   config.elements.value = mainElement.appendChild(valueElement);
 
-  // if (config.max) { inner += `<div class="counter__max">/${config.max}</div>` }
+  // if (config.max) { inner += `<div class="counter_max">/${config.max}</div>` }
   if (config.max || config.phases?.[0]?.max) {
     config.state.max = config.phases?.[0].max || config.max || 'Inf';
     const maxElement = document.createElement('div');
-    maxElement.className = 'counter__max';
+    maxElement.className = 'counter_max';
     maxElement.textContent = `/${config.state.max}`;
     config.elements.max = mainElement.appendChild(maxElement);
   }

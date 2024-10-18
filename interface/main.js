@@ -1,4 +1,33 @@
-const counters = {};
+let counters = {};
+/* All counter obj parameters:
+{
+  internalCounterID: {
+    name: 'Counter Display Name',
+    position: 'top', // left, right, top, bottom, top-left, top-right, bottom-left, bottom-right
+    max: 12, // Number to stop counting at (inclusive), or Infinity, or omit to imply Infinity
+    phases: [
+      {
+        name: 'Phase Display Name',
+        max: 30, // Number, Infinity, or omit to inherit the counter's max
+      },
+      {...}
+    ],
+    state: { // Used internally
+      value: 16, // Current count we're up to (within a state if it has them)
+      phase: 2, // Current phase number
+      max: 23 // Current max (of the phase if it has one)
+    },
+    elements: { // Used internally
+      main: <DOM Node>, // Counter div
+      name: <DOM Node>, // Counter name element
+      phase: <DOM Node>, // Phase name
+      value: <DOM Node>, // Current value
+      max: <DOM Node>, // Current max
+    }
+  },
+}
+*/
+
 const defaultConfigs = {
   counters: {
     phase: {
@@ -12,7 +41,7 @@ const defaultConfigs = {
         { name: 'Foot', max: 60 },
         { name: 'Toe Decrease', max: 15 },
         { name: 'Toe Increase', max: 15 },
-        { name: 'Waste Yarn', max: Infinity }
+        { name: 'Waste Yarn' }
       ]
     },
     total: {
@@ -68,7 +97,6 @@ const increment = () => {
 };
 
 const addCounter = (screen, counterID, config) => {
-  counters[counterID] = config;
   config.state = { value: 0 };
   config.elements = {};
 
@@ -98,7 +126,6 @@ const addCounter = (screen, counterID, config) => {
   valueElement.textContent = 0;
   config.elements.value = mainElement.appendChild(valueElement);
 
-  // if (config.max) { inner += `<div class="counter_max">/${config.max}</div>` }
   if (config.max || config.phases?.[0]?.max) {
     config.state.max = config.phases?.[0].max || config.max || 'Inf';
     const maxElement = document.createElement('div');
@@ -112,15 +139,20 @@ const addCounter = (screen, counterID, config) => {
 
 const setup = () => {
   try {
+    counters = {};
     const configElement = document.getElementById('config');
     const config = JSON.parse(configElement.value);
 
     const screen = document.getElementById('screen');
     screen.innerHTML = '';
 
-    for (const counterName in config.counters) {
-      if (Object.hasOwn(config.counters, counterName)) {
-        addCounter(screen, counterName, config.counters[counterName]);
+    for (const counterID in config.counters) {
+      if (Object.hasOwn(config.counters, counterID)) {
+        counters[counterID] = addCounter(
+          screen,
+          counterID,
+          config.counters[counterID]
+        );
       }
     }
   } catch (error) {

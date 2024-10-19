@@ -180,7 +180,7 @@ const setup = () => {
     }
   } catch (error) {
     document.getElementById('error').innerText = error.message;
-    console.dir(error.message);
+    console.error(error);
   }
 };
 

@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## ToDo
+
+- Better counter positioning
+  - Give position and size
+- Other trigger methods
+  - Phase change or full reset of another counter
+    - Hidden counters
+  - Separate trigger button
+    - Incriment/undo/reset specific counter
+    - Next/prev phase
+- Swap layout depending on counter phase
+- Undo
+- Other function blocks
+  - Timer
+  - Dummy (spacer, text, title)
+- Sounds
+- Trigger fullscreen colour from counter phase
+- Display the number of times a counter has reset
+- Editor
+  - Save/share
+- Mobile demo interface (tap screen, left to undo)
+
 ## [Unreleased]
 
 ### Fixed

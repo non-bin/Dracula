@@ -30,6 +30,7 @@ let counters = {};
 
 const defaultConfigs = {
   grid: { template: '60% auto / 40% auto' },
+  color: 'green',
   counters: {
     phase: {
       name: 'Phase',
@@ -158,6 +159,7 @@ const setup = () => {
     const screen = document.getElementById('screen');
     screen.innerHTML = '';
     screen.style.gridTemplate = config.grid?.template;
+    screen.style.background = config.color || '';
 
     for (const counterID in config.counters) {
       if (Object.hasOwn(config.counters, counterID)) {

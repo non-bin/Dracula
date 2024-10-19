@@ -65,6 +65,32 @@ const defaultConfigs = {
   }
 };
 
+// eslint-disable-next-line id-length
+const retIfNotSame = (a, b) => {
+  if (a === b) {
+    console.log(a, b, false);
+    return false;
+  }
+  console.log(a, b);
+
+  return a;
+};
+
+const updateCounterColor = (counter) => {
+  counter.elements.main.style.setProperty(
+    '--color',
+    retIfNotSame(
+      counter.phases?.[counter.state.phase].color || counter.color,
+      window.screenColor
+    ) || 'color-mix(in oklab, var(--screen-color), rgba(192, 192, 192) 37%)'
+  );
+};
+
+const updateCounterMax = (counter) => {
+  counter.state.max =
+    counter.phases[counter.state.phase].max || counter.max || Infinity;
+};
+
 const increment = () => {
   for (const counterName in counters) {
     if (Object.hasOwn(counters, counterName)) {
@@ -94,14 +120,8 @@ const increment = () => {
         counter.state.phase = 0;
       }
 
-      counter.elements.main.style.setProperty(
-        '--color',
-        counter.phases[counter.state.phase].color ||
-          counter.color ||
-          'color-mix(in oklab, var(--screen-color), rgba(255, 255, 255) 20%)'
-      );
-      counter.state.max =
-        counter.phases[counter.state.phase].max || counter.max || Infinity;
+      updateCounterColor(counter);
+      updateCounterMax(counter);
       phaseElement.textContent = counter.phases[counter.state.phase].name;
       maxElement.textContent = `/${counter.state.max}`;
 
@@ -110,52 +130,47 @@ const increment = () => {
   }
 };
 
-const addCounter = (screen, counterID, config) => {
-  config.state = { value: 0 };
-  config.elements = {};
+const addCounter = (screen, counterID, counter) => {
+  counter.state = { value: 0 };
+  counter.elements = {};
 
   const mainElement = document.createElement('div');
   mainElement.className = 'counter';
-  if (config.position) {
-    mainElement.classList.add(config.position);
+  if (counter.position) {
+    mainElement.classList.add(counter.position);
   }
-  config.elements.main = screen.appendChild(mainElement);
+  counter.elements.main = screen.appendChild(mainElement);
 
   const nameElement = document.createElement('div');
   nameElement.classList.add('counter_text', 'counter_name');
-  nameElement.textContent = config.name;
-  config.elements.name = mainElement.appendChild(nameElement);
+  nameElement.textContent = counter.name;
+  counter.elements.name = mainElement.appendChild(nameElement);
 
-  if (config.phases) {
-    config.state.phase = 0;
+  if (counter.phases) {
+    counter.state.phase = 0;
 
     const phaseElement = document.createElement('div');
     phaseElement.classList.add('counter_text', 'counter_phase');
-    phaseElement.textContent = config.phases[0].name;
-    config.elements.phase = mainElement.appendChild(phaseElement);
+    phaseElement.textContent = counter.phases[0].name;
+    counter.elements.phase = mainElement.appendChild(phaseElement);
   }
 
   const valueElement = document.createElement('div');
   valueElement.classList.add('counter_text', 'counter_value');
   valueElement.textContent = 0;
-  config.elements.value = mainElement.appendChild(valueElement);
+  counter.elements.value = mainElement.appendChild(valueElement);
 
-  if (config.max || config.phases?.[0]?.max) {
-    config.state.max = config.phases?.[0].max || config.max || 'Inf';
+  if (counter.max || counter.phases?.[0]?.max) {
+    updateCounterMax(counter);
     const maxElement = document.createElement('div');
     maxElement.classList.add('counter_text', 'counter_max');
-    maxElement.textContent = `/${config.state.max}`;
-    config.elements.max = mainElement.appendChild(maxElement);
+    maxElement.textContent = `/${counter.state.max}`;
+    counter.elements.max = mainElement.appendChild(maxElement);
   }
 
-  config.elements.main.style.setProperty(
-    '--color',
-    config.phases?.[config.state.phase].color ||
-      config.color ||
-      'color-mix(in oklab, var(--screen-color), rgba(255, 255, 255) 20%)'
-  );
+  updateCounterColor(counter);
 
-  return config;
+  return counter;
 };
 
 const setup = () => {
@@ -167,7 +182,8 @@ const setup = () => {
     const screen = document.getElementById('screen');
     screen.innerHTML = '';
     screen.style.gridTemplate = config.grid?.template;
-    screen.style.setProperty('--screen-color', config.color || 'white');
+    window.screenColor = config.color || 'white';
+    screen.style.setProperty('--screen-color', window.screenColor);
 
     for (const counterID in config.counters) {
       if (Object.hasOwn(config.counters, counterID)) {

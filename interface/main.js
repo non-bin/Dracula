@@ -30,7 +30,7 @@ let counters = {};
 
 const defaultConfigs = {
   grid: { template: '60% auto / 40% auto' },
-  color: 'green',
+  color: 'black',
   counters: {
     phase: {
       name: 'Phase',
@@ -94,8 +94,12 @@ const increment = () => {
         counter.state.phase = 0;
       }
 
-      counter.elements.main.style.background =
-        counter.phases[counter.state.phase].color || counter.color || '';
+      counter.elements.main.style.setProperty(
+        '--color',
+        counter.phases[counter.state.phase].color ||
+          counter.color ||
+          'color-mix(in oklab, var(--screen-color), rgba(255, 255, 255) 20%)'
+      );
       counter.state.max =
         counter.phases[counter.state.phase].max || counter.max || Infinity;
       phaseElement.textContent = counter.phases[counter.state.phase].name;
@@ -144,8 +148,12 @@ const addCounter = (screen, counterID, config) => {
     config.elements.max = mainElement.appendChild(maxElement);
   }
 
-  config.elements.main.style.background =
-    config.phases?.[config.state.phase].color || config.color || '';
+  config.elements.main.style.setProperty(
+    '--color',
+    config.phases?.[config.state.phase].color ||
+      config.color ||
+      'color-mix(in oklab, var(--screen-color), rgba(255, 255, 255) 20%)'
+  );
 
   return config;
 };
@@ -159,7 +167,7 @@ const setup = () => {
     const screen = document.getElementById('screen');
     screen.innerHTML = '';
     screen.style.gridTemplate = config.grid?.template;
-    screen.style.background = config.color || '';
+    screen.style.setProperty('--screen-color', config.color || 'white');
 
     for (const counterID in config.counters) {
       if (Object.hasOwn(config.counters, counterID)) {

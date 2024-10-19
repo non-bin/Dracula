@@ -10,12 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Counter display now fills the screen
+- Colour brightness contrast accessability
 
 ### Added
 
 - ESLint config
 - Grid template options
 - Colour options
+- Auto fullscreen on phones and tablets
 
 ### Changed
 

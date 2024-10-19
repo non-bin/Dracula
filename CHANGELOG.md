@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Grid template options
 - Colour options
 - Auto fullscreen on phones and tablets
+- Footer with version and author info
 
 ### Changed
 

@@ -94,3 +94,16 @@ body {
 .bottom-right {
   grid-area: 2 / 2 / 3 / 3;
 }
+
+footer {
+  text-align: center;
+  padding: 5px;
+  background-color: #030404;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+footer > a {
+  color: #44a7ff;
+  text-decoration: none;
+}

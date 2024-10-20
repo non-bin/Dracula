@@ -1,0 +1,11 @@
+{
+  "name": "dracula",
+  "version": "0.0.0",
+  "description": "Counter Dracula",
+  "author": "",
+  "license": "GPL-3.0-or-later",
+  "devDependencies": {
+    "eslint": "^9.13.0",
+    "globals": "^15.11.0"
+  }
+}

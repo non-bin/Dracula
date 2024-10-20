@@ -6,8 +6,7 @@ export default [
   {
     languageOptions: {
       globals: {
-        ...globals.browser,
-        ...globals.node
+        ...globals.browser
       }
     },
     linterOptions: {
@@ -81,7 +80,7 @@ export default [
       'no-array-constructor': 'error',
       'no-bitwise': 'error',
       'no-caller': 'error',
-      'no-console': 'off',
+      'no-console': 'warn',
       'no-continue': 'off',
       'no-div-regex': 'error',
       'no-else-return': 'error',

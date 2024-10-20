@@ -10,8 +10,18 @@
   }
 }
 
-body {
+body,
+textarea,
+button {
+  color: #fff;
+  background: #000;
+  font: 100% system-ui;
   margin: 0;
+  border-radius: 7pt;
+}
+
+a {
+  color: #44a7ff;
 }
 
 #config {
@@ -36,7 +46,7 @@ body {
 
 #screen {
   display: grid;
-  gap: 2%;
+  gap: 10px;
   grid-template: auto / auto;
   /* --screen-color: white; Set with JS */
   background-color: var(--screen-color);
@@ -52,6 +62,7 @@ body {
   /* --color: color-mix(in oklab, var(--screen-color), rgba(255, 255, 255) 20%); Set with JS*/
   background-color: var(--color);
   border: 1px solid rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
   font-size: 20px;
   text-align: center;
 }
@@ -98,12 +109,7 @@ body {
 footer {
   text-align: center;
   padding: 5px;
-  background-color: #030404;
+  background-color: #000;
   color: #fff;
   font-family: sans-serif;
-}
-
-footer > a {
-  color: #44a7ff;
-  text-decoration: none;
 }

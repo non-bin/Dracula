@@ -31,6 +31,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+### Added
+
+### Changed
+
+### Removed
+
+## [0.0.2] - 2024-10-20
+
+### Fixed
+
 - Counter display now fills the screen
 - Colour brightness contrast accessability
 
@@ -47,8 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Separated config for counter ID, and display name
 - Moved interface source to `/interface/` to make room for future pcb design files
 
-### Removed
-
 ## [0.0.1] - 2024-05-25
 
 ### Added
@@ -57,5 +65,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 2 row, 2 column layout
 - Plain JSON config
 
-[unreleased]: https://github.com/non-bin/Dracula/
+[unreleased]: https://github.com/non-bin/Dracula/tree/dev
+[0.0.2]: https://github.com/non-bin/Dracula/releases/tag/v0.0.2
 [0.0.1]: https://github.com/non-bin/Dracula/releases/tag/v0.0.1

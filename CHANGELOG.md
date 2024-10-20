@@ -25,7 +25,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Save/share
 - Mobile demo interface (tap screen, left to undo)
 
-## 0.0.3-alpha [Unreleased]
+## 1.0.0-alpha [Unreleased]
+
+### Fixed
+
+### Added
+
+### Changed
+
+### Removed
+
+## [0.0.3] - 2024-10-20
 
 ### Fixed
 
@@ -73,5 +83,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plain JSON config
 
 [unreleased]: https://github.com/non-bin/Dracula/tree/dev
+[0.0.3]: https://github.com/non-bin/Dracula/releases/tag/v0.0.3
 [0.0.2]: https://github.com/non-bin/Dracula/releases/tag/v0.0.2
 [0.0.1]: https://github.com/non-bin/Dracula/releases/tag/v0.0.1

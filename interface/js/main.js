@@ -1,7 +1,12 @@
-import { mobileOrTabletCheck, requestFullscreen } from './utilities.js';
+import { log, mobileOrTabletCheck, requestFullscreen } from './utilities.js';
 import { Counter } from './counter.js';
+import { History } from './history.js';
 
-let counters = {};
+const HISTORY_LENGTH = 500;
+
+let history;
+const screen = document.getElementById('screen');
+let counters;
 /* All counter obj parameters:
 {
   internalCounterID: {
@@ -84,10 +89,11 @@ const setup = () => {
     if (mobileOrTabletCheck()) requestFullscreen();
 
     counters = {};
+    history = new History(HISTORY_LENGTH);
+
     const configElement = document.getElementById('config');
     const config = JSON.parse(configElement.value);
 
-    const screen = document.getElementById('screen');
     screen.innerHTML = '';
     screen.style.gridTemplate = config.grid?.template;
     window.screenColor = config.color || 'white';
@@ -108,19 +114,44 @@ const setup = () => {
 };
 
 const incrementAll = () => {
+  const states = {};
   for (const counterID in counters) {
     if (Object.hasOwn(counters, counterID)) {
-      counters[counterID].increment();
+      states[counterID] = counters[counterID].increment();
+    }
+  }
+
+  history.push(states);
+};
+
+const undo = () => {
+  const newStates = history.pop();
+  if (!newStates) {
+    log(new Error('History empty'));
+    return;
+  }
+
+  for (const counterID in newStates) {
+    if (Object.hasOwn(newStates, counterID)) {
+      counters[counterID].revert(newStates[counterID]);
     }
   }
 };
 
 document.getElementById('increment').addEventListener('click', incrementAll);
 document.addEventListener('keydown', (event) => {
-  if (event.key === ' ') {
-    event.preventDefault();
-    event.stopPropagation();
-    incrementAll();
+  if (event.target.nodeName === 'BODY') {
+    if (event.key === ' ') {
+      event.preventDefault();
+      event.stopPropagation();
+
+      incrementAll();
+    } else if (event.key === 'z') {
+      event.preventDefault();
+      event.stopPropagation();
+
+      undo();
+    }
   }
 });
 document.getElementById('reset').addEventListener('click', () => {

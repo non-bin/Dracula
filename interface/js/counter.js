@@ -86,41 +86,58 @@ export class Counter {
   }
 
   updateCounterMax() {
-    this.state.max = this.phases[this.state.phase].max || this.max || Infinity;
+    this.state.max =
+      this.phases?.[this.state.phase].max || this.max || Infinity;
   }
 
-  increment() {
-    const valueElement = this.#elements.value;
-    const phaseElement = this.#elements.phase;
-    const maxElement = this.#elements.max;
-
-    this.state.value++;
-
-    if (!this.state.max || this.state.value < this.state.max) {
-      // No max, or haven't reached it yet
-      valueElement.textContent = this.state.value;
-      return;
-    }
-
-    this.state.value = 0;
-
-    if (!this.phases) {
-      valueElement.textContent = this.state.value;
-      return;
-    }
-
-    this.state.phase++;
-
-    if (this.state.phase >= this.phases.length) {
-      this.state.phase = 0;
-    }
-
+  render() {
     this.updateCounterColor();
     this.updateCounterMax();
 
-    phaseElement.textContent = this.phases[this.state.phase].name;
-    maxElement.textContent = `/${this.state.max}`;
+    if (this.phases) {
+      this.#elements.phase.textContent = this.phases[this.state.phase].name;
+    }
 
-    valueElement.textContent = this.state.value;
+    if (this.#elements.max) {
+      this.#elements.max.textContent = `/${this.state.max}`;
+    }
+
+    this.#elements.value.textContent = this.state.value;
+  }
+
+  increment(undoStack) {
+    const oldState = structuredClone(this.state);
+
+    this.state.value++;
+
+    (() => {
+      if (!this.state.max || this.state.value < this.state.max) {
+        // No max, or haven't reached it yet
+        this.#elements.value.textContent = this.state.value;
+        return;
+      }
+
+      this.state.value = 0;
+
+      if (!this.phases) {
+        this.#elements.value.textContent = this.state.value;
+        return;
+      }
+
+      this.state.phase++;
+
+      if (this.state.phase >= this.phases.length) {
+        this.state.phase = 0;
+      }
+    })();
+
+    this.render();
+
+    return oldState;
+  }
+
+  revert(state) {
+    this.state = structuredClone(state);
+    this.render();
   }
 }

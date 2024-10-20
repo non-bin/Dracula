@@ -38,3 +38,10 @@ export const requestFullscreen = () => {
     document.documentElement.msRequestFullscreen();
   }
 };
+
+export const log = (obj) => {
+  if (obj instanceof Error) {
+    document.getElementById('error').innerText = obj.message;
+    console.error(obj); // eslint-disable-line no-console
+  }
+};

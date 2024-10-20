@@ -40,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Refactored to use ES6 modules, and classes
 - Better counter positioning, by giving location and size
+- Refactor logging to a separate utility function
 
 ### Removed
 

@@ -103,8 +103,7 @@ const setup = () => {
       }
     }
   } catch (error) {
-    document.getElementById('error').innerText = error.message;
-    console.error(error); // eslint-disable-line no-console
+    log(error);
   }
 };
 

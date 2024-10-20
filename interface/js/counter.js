@@ -5,11 +5,10 @@ export class Counter {
   ID;
   state = { value: 0, max: null, phase: null };
   phases;
-  // position = {
-  //   location: [0, 0],
-  //   size: [1, 1]
-  // };
-  position = '';
+  layout = {
+    location: [0, 0],
+    size: [1, 1]
+  };
   max;
   color;
 
@@ -19,12 +18,14 @@ export class Counter {
   constructor(screen, counterID, counterConfig) {
     this.ID = counterID;
 
-    this.position = counterConfig.position;
+    // Main element
+    this.layout = counterConfig.layout;
     const mainElement = document.createElement('div');
     mainElement.className = 'counter';
-    mainElement.classList.add(this.position);
+    this.setLayout(counterConfig.layout, mainElement);
     this.#elements.main = screen.appendChild(mainElement);
 
+    // Name element
     this.name = counterConfig.name;
     const nameElement = document.createElement('div');
     nameElement.classList.add('counter_text', 'counter_name');
@@ -34,6 +35,7 @@ export class Counter {
     if (counterConfig.phases) {
       this.state.phase = 0;
 
+      // Phase element
       this.phases = counterConfig.phases;
       const phaseElement = document.createElement('div');
       phaseElement.classList.add('counter_text', 'counter_phase');
@@ -41,6 +43,7 @@ export class Counter {
       this.#elements.phase = mainElement.appendChild(phaseElement);
     }
 
+    // Value element
     const valueElement = document.createElement('div');
     valueElement.classList.add('counter_text', 'counter_value');
     valueElement.textContent = 0;
@@ -51,6 +54,7 @@ export class Counter {
 
       this.updateCounterMax();
 
+      // Max element
       const maxElement = document.createElement('div');
       maxElement.classList.add('counter_text', 'counter_max');
       maxElement.textContent = `/${this.state.max}`;
@@ -58,6 +62,17 @@ export class Counter {
     }
 
     this.updateCounterColor();
+  }
+
+  setLayout(layout, mainElement = null) {
+    mainElement ||= this.#elements.main;
+
+    const x1 = layout.location[0] + 1; // CSS Grid locations are 1 indexed
+    const y1 = layout.location[1] + 1;
+    const x2 = x1 + layout.size[0];
+    const y2 = y1 + layout.size[1];
+
+    mainElement.style.gridArea = `${y1} / ${x1} / ${y2} / ${x2}`;
   }
 
   updateCounterColor() {

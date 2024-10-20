@@ -6,7 +6,10 @@ let counters = {};
 {
   internalCounterID: {
     name: 'Counter Display Name',
-    position: 'top', // left, right, top, bottom, top-left, top-right, bottom-left, bottom-right
+    layout: {
+      location: [0, 0], // x and y location of the top left corner
+      size: [2, 1] // width and height of the counter
+    },
     max: 12, // Number to stop counting at (inclusive), or Infinity, or omit to imply Infinity
     phases: [
       {
@@ -37,11 +40,10 @@ const defaultConfigs = {
   counters: {
     phase: {
       name: 'Phase',
-      // position: {
-      //   location: [0, 0],
-      //   size: [2, 1]
-      // },
-      position: 'top',
+      layout: {
+        location: [0, 0],
+        size: [2, 1]
+      },
       phases: [
         { name: 'Hem', max: 30 },
         { name: 'Ankle', max: 50 },
@@ -56,11 +58,17 @@ const defaultConfigs = {
     total: {
       name: 'Total',
       color: 'green',
-      position: 'bottom-left'
+      layout: {
+        location: [0, 1],
+        size: [1, 1]
+      }
     },
     colour: {
       name: 'Colour',
-      position: 'bottom-right',
+      layout: {
+        location: [1, 1],
+        size: [1, 1]
+      },
       phases: [
         { name: 'Red', color: 'red' },
         { name: 'Green', color: 'green' },

@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## ToDo
 
-- Better counter positioning
-  - Give position and size
 - Other trigger methods
   - Phase change or full reset of another counter
     - Hidden counters
@@ -41,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Refactored to use ES6 modules, and classes
+- Better counter positioning, by giving location and size
 
 ### Removed
 

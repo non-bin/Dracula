@@ -39,6 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Refactored to use ES6 modules, and classes
+
 ### Removed
 
 ## [0.0.2] - 2024-10-20

@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Save/share
 - Mobile demo interface (tap screen, left to undo)
 
-## [Unreleased]
+## 0.0.3-alpha [Unreleased]
 
 ### Fixed
 

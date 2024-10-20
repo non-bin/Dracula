@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Add .editorconfig, .prettierrc, and eslint.config.mjs for code consistency
+
 ### Added
 
 ### Changed

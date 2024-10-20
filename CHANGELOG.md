@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Add .editorconfig, .prettierrc, and eslint.config.mjs for code consistency
+- Counters now reset to 0 when they reach their max, so you can see what comes next
 
 ### Added
 

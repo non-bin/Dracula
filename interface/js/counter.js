@@ -81,13 +81,13 @@ export class Counter {
 
     this.state.value++;
 
-    if (!this.state.max || this.state.value <= this.state.max) {
+    if (!this.state.max || this.state.value < this.state.max) {
       // No max, or haven't reached it yet
       valueElement.textContent = this.state.value;
       return;
     }
 
-    this.state.value = 1;
+    this.state.value = 0;
 
     if (!this.phases) {
       valueElement.textContent = this.state.value;

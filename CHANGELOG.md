@@ -13,7 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Separate trigger button
     - Incriment/undo/reset specific counter
     - Next/prev phase
-- Swap layout depending on counter phase
+- Let counter phase set
+  - Layout
+  - Config of other counters
 - Undo
 - Other function blocks
   - Timer

@@ -1,12 +1,5 @@
-import { log, mobileOrTabletCheck, requestFullscreen } from './utilities.js';
-import { Counter } from './counter.js';
-import { History } from './history.js';
+import { log } from './utilities.js';
 
-const HISTORY_LENGTH = 500;
-
-let history;
-const screen = document.getElementById('screen');
-let counters;
 /* All counter obj parameters:
 {
   internalCounterID: {
@@ -39,7 +32,7 @@ let counters;
 }
 */
 
-const defaultConfigs = {
+export const defaultConfigs = {
   grid: { template: '60% auto / 40% auto' },
   color: 'black',
   counters: {
@@ -84,36 +77,7 @@ const defaultConfigs = {
   }
 };
 
-const setup = () => {
-  try {
-    if (mobileOrTabletCheck()) requestFullscreen();
-
-    counters = {};
-    history = new History(HISTORY_LENGTH);
-
-    const configElement = document.getElementById('config');
-    const config = JSON.parse(configElement.value);
-
-    screen.innerHTML = '';
-    screen.style.gridTemplate = config.grid?.template;
-    window.screenColor = config.color || 'white';
-    screen.style.setProperty('--screen-color', window.screenColor);
-
-    for (const counterID in config.counters) {
-      if (Object.hasOwn(config.counters, counterID)) {
-        counters[counterID] = new Counter(
-          screen,
-          counterID,
-          config.counters[counterID]
-        );
-      }
-    }
-  } catch (error) {
-    log(error);
-  }
-};
-
-const incrementAll = () => {
+export const incrementAll = (counters, history) => {
   const states = {};
   for (const counterID in counters) {
     if (Object.hasOwn(counters, counterID)) {
@@ -124,7 +88,7 @@ const incrementAll = () => {
   history.push(states);
 };
 
-const undo = () => {
+export const undo = (counters, history) => {
   const newStates = history.pop();
   if (!newStates) {
     log(new Error('History empty'));
@@ -137,31 +101,3 @@ const undo = () => {
     }
   }
 };
-
-document.getElementById('increment').addEventListener('click', incrementAll);
-document.addEventListener('keydown', (event) => {
-  if (event.target.nodeName === 'BODY') {
-    if (event.key === ' ') {
-      event.preventDefault();
-      event.stopPropagation();
-
-      incrementAll();
-    } else if (event.key === 'z') {
-      event.preventDefault();
-      event.stopPropagation();
-
-      undo();
-    }
-  }
-});
-document.getElementById('reset').addEventListener('click', () => {
-  setup();
-});
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('config').value = JSON.stringify(
-    defaultConfigs,
-    null,
-    2 // eslint-disable-line no-magic-numbers
-  );
-  setup();
-});

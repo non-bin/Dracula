@@ -1,4 +1,9 @@
-import { defaultConfigs, incrementAll, undo } from './main.js';
+import {
+  defaultConfigs,
+  generateGridTemplate,
+  incrementAll,
+  undo
+} from './main.js';
 import { log, mobileOrTabletCheck, requestFullscreen } from './utilities.js';
 import { Counter } from './counter.js';
 import { History } from './history.js';
@@ -20,7 +25,7 @@ const resetCounters = (historyLength) => {
     const config = JSON.parse(configElement.value);
 
     screen.innerHTML = '';
-    screen.style.gridTemplate = config.grid?.template;
+    screen.style.gridTemplate = generateGridTemplate(config.grid);
     window.screenColor = config.color || 'white';
     screen.style.setProperty('--screen-color', window.screenColor);
 

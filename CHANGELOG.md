@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - New URL is <https://dracula.jacka.net.au>
 - Refactored main.js, extracting logic to new index.js and editor.js files
+- Grid template is now generated from parameters in the config instead of baked as a string
 
 ### Removed
 

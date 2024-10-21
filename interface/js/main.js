@@ -33,7 +33,7 @@ import { log } from './utilities.js';
 */
 
 export const defaultConfigs = {
-  grid: { template: '60% auto / 40% auto' },
+  grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
   color: 'black',
   counters: {
     phase: {
@@ -75,6 +75,30 @@ export const defaultConfigs = {
       max: 3
     }
   }
+};
+
+export const generateGridTemplate = ({ rows, columns }) => {
+  let template = '';
+
+  if (rows) {
+    for (let rowNum = 0; rowNum < rows.length; rowNum++) {
+      template += `${rows[rowNum]} `;
+    }
+  } else {
+    template = 'auto ';
+  }
+
+  template += '/';
+
+  if (columns) {
+    for (let columnNum = 0; columnNum < columns.length; columnNum++) {
+      template += ` ${columns[columnNum]}`;
+    }
+  } else {
+    template += ' auto';
+  }
+
+  return template;
 };
 
 export const incrementAll = (counters, history) => {

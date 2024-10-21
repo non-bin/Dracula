@@ -31,9 +31,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- devServer.sh is now executable
+
 ### Added
 
 ### Changed
+
+- New URL is <https://dracula.jacka.net.au>
+- Refactored main.js, extracting logic to new index.js and editor.js files
 
 ### Removed
 
@@ -47,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Terribly drawn favicon
+- devServer.sh
 
 ### Changed
 

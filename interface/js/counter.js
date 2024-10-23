@@ -1,45 +1,42 @@
 import * as utils from './utilities.js';
 
 export default class Counter {
-  name;
-  ID;
-  state = { value: 0, max: null, phase: null };
-  phases;
-  layout = {
+  #name;
+  #state = { value: 0, max: null, phase: null };
+  #phases;
+  #layout = {
     location: [0, 0],
     size: [1, 1]
   };
-  max;
-  color;
+  #max;
+  #color;
 
   // Private Properties
   #elements = {};
 
-  constructor(screenElement, counterID, counterConfig) {
-    this.ID = counterID;
-
+  constructor({ screenElement, config, editHandler = null }) {
     // Main element
-    this.layout = counterConfig.layout;
+    this.#layout = config.layout;
     const mainElement = document.createElement('div');
     mainElement.className = 'counter';
-    this.setLayout(counterConfig.layout, mainElement);
+    this.setLayout(this.#layout, mainElement);
     this.#elements.main = screenElement.appendChild(mainElement);
 
     // Name element
-    this.name = counterConfig.name;
+    this.#name = config.name;
     const nameElement = document.createElement('div');
     nameElement.classList.add('counter_text', 'counter_name');
-    nameElement.textContent = this.name;
+    nameElement.textContent = this.#name;
     this.#elements.name = mainElement.appendChild(nameElement);
 
-    if (counterConfig.phases) {
-      this.state.phase = 0;
+    if (config.phases) {
+      this.#state.phase = 0;
 
       // Phase element
-      this.phases = counterConfig.phases;
+      this.phases = config.phases;
       const phaseElement = document.createElement('div');
       phaseElement.classList.add('counter_text', 'counter_phase');
-      phaseElement.textContent = this.phases[0].name;
+      phaseElement.textContent = this.#phases[0].name;
       this.#elements.phase = mainElement.appendChild(phaseElement);
     }
 
@@ -49,15 +46,15 @@ export default class Counter {
     valueElement.textContent = 0;
     this.#elements.value = mainElement.appendChild(valueElement);
 
-    if (counterConfig.max || this.phases?.[0]?.max) {
-      this.max = counterConfig.max;
+    if (config.max || this.#phases?.[0]?.max) {
+      this.#max = config.max;
 
       this.updateCounterMax();
 
       // Max element
       const maxElement = document.createElement('div');
       maxElement.classList.add('counter_text', 'counter_max');
-      maxElement.textContent = `/${this.state.max}`;
+      maxElement.textContent = `/${this.#state.max}`;
       this.#elements.max = mainElement.appendChild(maxElement);
     }
 
@@ -79,55 +76,55 @@ export default class Counter {
     this.#elements.main.style.setProperty(
       '--color',
       utils.retIfNotSame(
-        this.phases?.[this.state.phase].color || this.color,
+        this.#phases?.[this.#state.phase].color || this.#color,
         window.screenColor
       ) || 'color-mix(in oklab, var(--screen-color), rgba(192, 192, 192) 37%)'
     );
   }
 
   updateCounterMax() {
-    this.state.max =
-      this.phases?.[this.state.phase].max || this.max || Infinity;
+    this.#state.max =
+      this.#phases?.[this.#state.phase].max || this.#max || Infinity;
   }
 
   render() {
     this.updateCounterColor();
     this.updateCounterMax();
 
-    if (this.phases) {
-      this.#elements.phase.textContent = this.phases[this.state.phase].name;
+    if (this.#phases) {
+      this.#elements.phase.textContent = this.#phases[this.#state.phase].name;
     }
 
     if (this.#elements.max) {
-      this.#elements.max.textContent = `/${this.state.max}`;
+      this.#elements.max.textContent = `/${this.#state.max}`;
     }
 
-    this.#elements.value.textContent = this.state.value;
+    this.#elements.value.textContent = this.#state.value;
   }
 
   increment() {
-    const oldState = structuredClone(this.state);
+    const oldState = structuredClone(this.#state);
 
-    this.state.value++;
+    this.#state.value++;
 
     (() => {
-      if (!this.state.max || this.state.value < this.state.max) {
+      if (!this.#state.max || this.#state.value < this.#state.max) {
         // No max, or haven't reached it yet
-        this.#elements.value.textContent = this.state.value;
+        this.#elements.value.textContent = this.#state.value;
         return;
       }
 
-      this.state.value = 0;
+      this.#state.value = 0;
 
-      if (!this.phases) {
-        this.#elements.value.textContent = this.state.value;
+      if (!this.#phases) {
+        this.#elements.value.textContent = this.#state.value;
         return;
       }
 
-      this.state.phase++;
+      this.#state.phase++;
 
-      if (this.state.phase >= this.phases.length) {
-        this.state.phase = 0;
+      if (this.#state.phase >= this.#phases.length) {
+        this.#state.phase = 0;
       }
     })();
 
@@ -137,7 +134,7 @@ export default class Counter {
   }
 
   revert(state) {
-    this.state = structuredClone(state);
+    this.#state = structuredClone(state);
     this.render();
   }
 }

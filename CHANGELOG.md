@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Let counter phase set
   - Layout
   - Config of other counters
-- Undo
 - Other function blocks
   - Timer
   - Dummy (spacer, text, title)
@@ -38,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Editor
   - Rulers to edit the grid sizing
+- Undo history
 
 ### Changed
 

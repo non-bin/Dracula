@@ -1,4 +1,6 @@
 import * as utils from './utilities.js';
+import Counter from './counter.js';
+import HistoryManager from './historyManager.js';
 
 /* All counter obj parameters:
 {
@@ -31,6 +33,10 @@ import * as utils from './utilities.js';
   },
 }
 */
+
+const screen = document.getElementById('screen');
+let counters;
+let history;
 
 export const defaultConfigs = {
   grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
@@ -101,7 +107,7 @@ export const generateGridTemplate = ({ rows, columns }) => {
   return template;
 };
 
-export const incrementAll = (counters, history) => {
+export const incrementAll = () => {
   const states = {};
   for (const counterID in counters) {
     if (Object.hasOwn(counters, counterID)) {
@@ -112,7 +118,7 @@ export const incrementAll = (counters, history) => {
   history.push(states);
 };
 
-export const undo = (counters, history) => {
+export const undo = () => {
   const newStates = history.pop();
   if (!newStates) {
     utils.log(new Error('History empty'));
@@ -123,5 +129,34 @@ export const undo = (counters, history) => {
     if (Object.hasOwn(newStates, counterID)) {
       counters[counterID].revert(newStates[counterID]);
     }
+  }
+};
+
+export const resetCounters = (historyLength) => {
+  try {
+    if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
+
+    counters = {};
+    history = new HistoryManager(historyLength);
+
+    const configElement = document.getElementById('config');
+    const config = JSON.parse(configElement.value);
+
+    screen.innerHTML = '';
+    screen.style.gridTemplate = generateGridTemplate(config.grid);
+    window.screenColor = config.color || 'white';
+    screen.style.setProperty('--screen-color', window.screenColor);
+
+    for (const counterID in config.counters) {
+      if (Object.hasOwn(config.counters, counterID)) {
+        counters[counterID] = new Counter(
+          screen,
+          counterID,
+          config.counters[counterID]
+        );
+      }
+    }
+  } catch (error) {
+    utils.log(error);
   }
 };

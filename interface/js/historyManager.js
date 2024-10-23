@@ -1,4 +1,4 @@
-export default class History {
+export default class HistoryManager {
   maxLength = 500;
 
   #states = [];

@@ -33,7 +33,7 @@ export default class Counter {
       this.#state.phase = 0;
 
       // Phase element
-      this.phases = config.phases;
+      this.#phases = config.phases;
       const phaseElement = document.createElement('div');
       phaseElement.classList.add('counter_text', 'counter_phase');
       phaseElement.textContent = this.#phases[0].name;

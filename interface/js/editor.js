@@ -43,6 +43,9 @@ const resetCounters = (historyLength) => {
   }
 };
 
+document.getElementById('increment').addEventListener('click', () => {
+  incrementAll(counters, history);
+});
 document.addEventListener('keydown', (event) => {
   if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
     if (event.key === ' ') {
@@ -62,6 +65,9 @@ document.addEventListener('keydown', (event) => {
       resetCounters(HISTORY_LENGTH);
     }
   }
+});
+document.getElementById('reset').addEventListener('click', () => {
+  resetCounters(HISTORY_LENGTH);
 });
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('config').value = JSON.stringify(

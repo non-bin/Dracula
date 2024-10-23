@@ -160,3 +160,34 @@ export const resetCounters = (historyLength) => {
     utils.log(error);
   }
 };
+
+export const setupEventListeners = (historyLength) => {
+  document.addEventListener('keydown', (event) => {
+    if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
+      if (event.key === ' ') {
+        event.preventDefault();
+        event.stopPropagation();
+
+        incrementAll();
+      } else if (event.key === 'z') {
+        event.preventDefault();
+        event.stopPropagation();
+
+        undo();
+      } else if (event.key === 'r') {
+        event.preventDefault();
+        event.stopPropagation();
+
+        resetCounters(historyLength);
+      }
+    }
+  });
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('config').value = JSON.stringify(
+      defaultConfigs,
+      null,
+      2 // eslint-disable-line no-magic-numbers
+    );
+    resetCounters(historyLength);
+  });
+};

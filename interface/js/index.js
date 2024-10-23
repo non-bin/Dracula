@@ -1,5 +1,5 @@
-import * as main from './screen.js';
+import Screen from './screen.js';
 
 const HISTORY_LENGTH = 500;
 
-main.setupEventListeners(HISTORY_LENGTH);
+const screen = new Screen(HISTORY_LENGTH);

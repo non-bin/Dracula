@@ -15,7 +15,7 @@ export default class Counter {
   // Private Properties
   #elements = {};
 
-  constructor(screen, counterID, counterConfig) {
+  constructor(screenElement, counterID, counterConfig) {
     this.ID = counterID;
 
     // Main element
@@ -23,7 +23,7 @@ export default class Counter {
     const mainElement = document.createElement('div');
     mainElement.className = 'counter';
     this.setLayout(counterConfig.layout, mainElement);
-    this.#elements.main = screen.appendChild(mainElement);
+    this.#elements.main = screenElement.appendChild(mainElement);
 
     // Name element
     this.name = counterConfig.name;
@@ -105,7 +105,7 @@ export default class Counter {
     this.#elements.value.textContent = this.state.value;
   }
 
-  increment(undoStack) {
+  increment() {
     const oldState = structuredClone(this.state);
 
     this.state.value++;

@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored main.js, extracting logic to new index.js and editor.js files
 - Refactor imports to use wildcard and default exports
 - Rename `History` to `HistoryManager` so it doesn't conflict with `window.history`
-- Rename `main.js` to `screen.js` ready to turn it into a class
+- Rename `main.js` to `screen.js` and turn it into a class
 - Refactor common code from `index.js` and `editor.js` into `screen.js`
 
 ## [0.0.3] - 2024-10-20

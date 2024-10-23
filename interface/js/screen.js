@@ -34,160 +34,167 @@ import HistoryManager from './historyManager.js';
 }
 */
 
-const screen = document.getElementById('screen');
-let counters;
-let history;
+export default class Screen {
+  #screenElement = document.getElementById('screen');
+  #counters;
+  #history;
 
-export const defaultConfigs = {
-  grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
-  color: 'black',
-  counters: {
-    phase: {
-      name: 'Phase',
-      layout: {
-        location: [0, 0],
-        size: [2, 1]
+  static defaultConfigs = {
+    grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
+    color: 'black',
+    counters: {
+      phase: {
+        name: 'Phase',
+        layout: {
+          location: [0, 0],
+          size: [2, 1]
+        },
+        phases: [
+          { name: 'Hem', max: 30 },
+          { name: 'Ankle', max: 50 },
+          { name: 'Heel Decrease', max: 15 },
+          { name: 'Heal Increase', max: 15 },
+          { name: 'Foot', max: 60 },
+          { name: 'Toe Decrease', max: 15 },
+          { name: 'Toe Increase', max: 15 },
+          { name: 'Waste Yarn' }
+        ]
       },
-      phases: [
-        { name: 'Hem', max: 30 },
-        { name: 'Ankle', max: 50 },
-        { name: 'Heel Decrease', max: 15 },
-        { name: 'Heal Increase', max: 15 },
-        { name: 'Foot', max: 60 },
-        { name: 'Toe Decrease', max: 15 },
-        { name: 'Toe Increase', max: 15 },
-        { name: 'Waste Yarn' }
-      ]
-    },
-    total: {
-      name: 'Total',
-      color: 'green',
-      layout: {
-        location: [0, 1],
-        size: [1, 1]
-      }
-    },
-    colour: {
-      name: 'Colour',
-      layout: {
-        location: [1, 1],
-        size: [1, 1]
+      total: {
+        name: 'Total',
+        color: 'green',
+        layout: {
+          location: [0, 1],
+          size: [1, 1]
+        }
       },
-      phases: [
-        { name: 'Red', color: 'red' },
-        { name: 'Green', color: 'green' },
-        { name: 'Black', color: 'black', max: 2 }
-      ],
-      max: 3
-    }
-  }
-};
-
-export const generateGridTemplate = ({ rows, columns }) => {
-  let template = '';
-
-  if (rows) {
-    for (let rowNum = 0; rowNum < rows.length; rowNum++) {
-      template += `${rows[rowNum]} `;
-    }
-  } else {
-    template = 'auto ';
-  }
-
-  template += '/';
-
-  if (columns) {
-    for (let columnNum = 0; columnNum < columns.length; columnNum++) {
-      template += ` ${columns[columnNum]}`;
-    }
-  } else {
-    template += ' auto';
-  }
-
-  return template;
-};
-
-export const incrementAll = () => {
-  const states = {};
-  for (const counterID in counters) {
-    if (Object.hasOwn(counters, counterID)) {
-      states[counterID] = counters[counterID].increment();
-    }
-  }
-
-  history.push(states);
-};
-
-export const undo = () => {
-  const newStates = history.pop();
-  if (!newStates) {
-    utils.log(new Error('History empty'));
-    return;
-  }
-
-  for (const counterID in newStates) {
-    if (Object.hasOwn(newStates, counterID)) {
-      counters[counterID].revert(newStates[counterID]);
-    }
-  }
-};
-
-export const resetCounters = (historyLength) => {
-  try {
-    if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
-
-    counters = {};
-    history = new HistoryManager(historyLength);
-
-    const configElement = document.getElementById('config');
-    const config = JSON.parse(configElement.value);
-
-    screen.innerHTML = '';
-    screen.style.gridTemplate = generateGridTemplate(config.grid);
-    window.screenColor = config.color || 'white';
-    screen.style.setProperty('--screen-color', window.screenColor);
-
-    for (const counterID in config.counters) {
-      if (Object.hasOwn(config.counters, counterID)) {
-        counters[counterID] = new Counter(
-          screen,
-          counterID,
-          config.counters[counterID]
-        );
+      colour: {
+        name: 'Colour',
+        layout: {
+          location: [1, 1],
+          size: [1, 1]
+        },
+        phases: [
+          { name: 'Red', color: 'red' },
+          { name: 'Green', color: 'green' },
+          { name: 'Black', color: 'black', max: 2 }
+        ],
+        max: 3
       }
     }
-  } catch (error) {
-    utils.log(error);
+  };
+
+  static generateGridTemplate({ rows, columns }) {
+    let template = '';
+
+    if (rows) {
+      for (let rowNum = 0; rowNum < rows.length; rowNum++) {
+        template += `${rows[rowNum]} `;
+      }
+    } else {
+      template = 'auto ';
+    }
+
+    template += '/';
+
+    if (columns) {
+      for (let columnNum = 0; columnNum < columns.length; columnNum++) {
+        template += ` ${columns[columnNum]}`;
+      }
+    } else {
+      template += ' auto';
+    }
+
+    return template;
   }
-};
 
-export const setupEventListeners = (historyLength) => {
-  document.addEventListener('keydown', (event) => {
-    if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
-      if (event.key === ' ') {
-        event.preventDefault();
-        event.stopPropagation();
+  constructor(historyLength) {
+    document.addEventListener('keydown', (event) => {
+      if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
+        if (event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
 
-        incrementAll();
-      } else if (event.key === 'z') {
-        event.preventDefault();
-        event.stopPropagation();
+          this.incrementAll();
+        } else if (event.key === 'z') {
+          event.preventDefault();
+          event.stopPropagation();
 
-        undo();
-      } else if (event.key === 'r') {
-        event.preventDefault();
-        event.stopPropagation();
+          this.undo();
+        } else if (event.key === 'r') {
+          event.preventDefault();
+          event.stopPropagation();
 
-        resetCounters(historyLength);
+          this.resetCounters(historyLength);
+        }
+      }
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('config').value = JSON.stringify(
+        Screen.defaultConfigs,
+        null,
+        2 // eslint-disable-line no-magic-numbers
+      );
+      this.resetCounters(historyLength);
+    });
+  }
+
+  incrementAll() {
+    const states = {};
+    for (const counterID in this.#counters) {
+      if (Object.hasOwn(this.#counters, counterID)) {
+        states[counterID] = this.#counters[counterID].increment();
       }
     }
-  });
-  document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('config').value = JSON.stringify(
-      defaultConfigs,
-      null,
-      2 // eslint-disable-line no-magic-numbers
-    );
-    resetCounters(historyLength);
-  });
-};
+
+    this.#history.push(states);
+  }
+
+  undo() {
+    const newStates = this.#history.pop();
+    if (!newStates) {
+      utils.log(new Error('History empty'));
+      return;
+    }
+
+    for (const counterID in newStates) {
+      if (Object.hasOwn(newStates, counterID)) {
+        this.#counters[counterID].revert(newStates[counterID]);
+      }
+    }
+  }
+
+  resetCounters(historyLength) {
+    try {
+      if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
+
+      this.#counters = {};
+      this.#history = new HistoryManager(historyLength);
+
+      const configElement = document.getElementById('config');
+      const config = JSON.parse(configElement.value);
+
+      this.#screenElement.innerHTML = '';
+      this.#screenElement.style.gridTemplate = Screen.generateGridTemplate(
+        config.grid
+      );
+      window.screenColor = config.color || 'white';
+      this.#screenElement.style.setProperty(
+        '--screen-color',
+        window.screenColor
+      );
+
+      for (const counterID in config.counters) {
+        if (Object.hasOwn(config.counters, counterID)) {
+          this.#counters[counterID] = new Counter(
+            this.#screenElement,
+            counterID,
+            config.counters[counterID]
+          );
+        }
+      }
+    } catch (error) {
+      utils.log(error);
+    }
+  }
+}

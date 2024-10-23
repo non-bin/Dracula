@@ -1,12 +1,12 @@
-import * as main from './screen.js';
+import Screen from './screen.js';
 
 const HISTORY_LENGTH = 500;
 
-main.setupEventListeners(HISTORY_LENGTH);
+const screen = new Screen(HISTORY_LENGTH);
 
 document.getElementById('increment').addEventListener('click', () => {
-  main.incrementAll();
+  screen.incrementAll();
 });
 document.getElementById('reset').addEventListener('click', () => {
-  main.resetCounters(HISTORY_LENGTH);
+  screen.resetCounters(HISTORY_LENGTH);
 });

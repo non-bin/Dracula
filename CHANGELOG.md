@@ -34,8 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- devServer.sh is now executable
-
 ### Added
 
 - Editor
@@ -43,10 +41,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - New URL is <https://dracula.jacka.net.au>
-- Refactored main.js, extracting logic to new index.js and editor.js files
 - Grid template is now generated from parameters in the config instead of baked as a string
 
 ### Removed
+
+### Internal
+
+- devServer.sh is now executable
+- Refactored main.js, extracting logic to new index.js and editor.js files
+- Refactor imports to use wildcard and default exports
 
 ## [0.0.3] - 2024-10-20
 

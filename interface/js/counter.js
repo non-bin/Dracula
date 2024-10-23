@@ -1,6 +1,6 @@
-import { retIfNotSame } from './utilities.js';
+import * as utils from './utilities.js';
 
-export class Counter {
+export default class Counter {
   name;
   ID;
   state = { value: 0, max: null, phase: null };
@@ -78,7 +78,7 @@ export class Counter {
   updateCounterColor() {
     this.#elements.main.style.setProperty(
       '--color',
-      retIfNotSame(
+      utils.retIfNotSame(
         this.phases?.[this.state.phase].color || this.color,
         window.screenColor
       ) || 'color-mix(in oklab, var(--screen-color), rgba(192, 192, 192) 37%)'

@@ -1,4 +1,4 @@
-import { log } from './utilities.js';
+import * as utils from './utilities.js';
 
 /* All counter obj parameters:
 {
@@ -115,7 +115,7 @@ export const incrementAll = (counters, history) => {
 export const undo = (counters, history) => {
   const newStates = history.pop();
   if (!newStates) {
-    log(new Error('History empty'));
+    utils.log(new Error('History empty'));
     return;
   }
 

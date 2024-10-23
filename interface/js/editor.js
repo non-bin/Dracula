@@ -1,12 +1,7 @@
-import {
-  defaultConfigs,
-  generateGridTemplate,
-  incrementAll,
-  undo
-} from './main.js';
-import { log, mobileOrTabletCheck, requestFullscreen } from './utilities.js';
-import { Counter } from './counter.js';
-import { History } from './history.js';
+import * as main from './main.js';
+import * as utils from './utilities.js';
+import Counter from './counter.js';
+import History from './history.js';
 
 const HISTORY_LENGTH = 500;
 
@@ -16,7 +11,7 @@ let history;
 
 const resetCounters = (historyLength) => {
   try {
-    if (mobileOrTabletCheck()) requestFullscreen();
+    if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
 
     counters = {};
     history = new History(historyLength);
@@ -25,7 +20,7 @@ const resetCounters = (historyLength) => {
     const config = JSON.parse(configElement.value);
 
     screen.innerHTML = '';
-    screen.style.gridTemplate = generateGridTemplate(config.grid);
+    screen.style.gridTemplate = main.generateGridTemplate(config.grid);
     window.screenColor = config.color || 'white';
     screen.style.setProperty('--screen-color', window.screenColor);
 
@@ -39,12 +34,12 @@ const resetCounters = (historyLength) => {
       }
     }
   } catch (error) {
-    log(error);
+    utils.log(error);
   }
 };
 
 document.getElementById('increment').addEventListener('click', () => {
-  incrementAll(counters, history);
+  main.incrementAll(counters, history);
 });
 document.addEventListener('keydown', (event) => {
   if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
@@ -52,12 +47,12 @@ document.addEventListener('keydown', (event) => {
       event.preventDefault();
       event.stopPropagation();
 
-      incrementAll(counters, history);
+      main.incrementAll(counters, history);
     } else if (event.key === 'z') {
       event.preventDefault();
       event.stopPropagation();
 
-      undo(counters, history);
+      main.undo(counters, history);
     } else if (event.key === 'r') {
       event.preventDefault();
       event.stopPropagation();
@@ -71,7 +66,7 @@ document.getElementById('reset').addEventListener('click', () => {
 });
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('config').value = JSON.stringify(
-    defaultConfigs,
+    main.defaultConfigs,
     null,
     2 // eslint-disable-line no-magic-numbers
   );

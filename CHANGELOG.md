@@ -25,7 +25,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display the number of times a counter has reset
 - Editor
   - Save/share
-- Mobile demo interface (tap screen, left to undo)
+- Mobile interface
+  - Tap to increment
+  - Hold to open popup
+- Keyboard shortcut reference popup (responsive to config)
 
 ## 1.0.0-alpha [Unreleased]
 

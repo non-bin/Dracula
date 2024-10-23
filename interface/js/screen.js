@@ -38,6 +38,9 @@ export default class Screen {
   #screenElement = document.getElementById('screen');
   #counters;
   #history;
+  #editHandler;
+  #postResetCallback;
+  #config;
 
   static defaultConfigs = {
     grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
@@ -84,12 +87,14 @@ export default class Screen {
     }
   };
 
-  static generateGridTemplate({ rows, columns }) {
+  updateGridTemplate(grid) {
+    this.#config.grid ||= grid;
+
     let template = '';
 
-    if (rows) {
-      for (let rowNum = 0; rowNum < rows.length; rowNum++) {
-        template += `${rows[rowNum]} `;
+    if (this.#config.grid.rows) {
+      for (let rowNum = 0; rowNum < this.#config.grid.rows.length; rowNum++) {
+        template += `${this.#config.grid.rows[rowNum]} `;
       }
     } else {
       template = 'auto ';
@@ -97,18 +102,45 @@ export default class Screen {
 
     template += '/';
 
-    if (columns) {
-      for (let columnNum = 0; columnNum < columns.length; columnNum++) {
-        template += ` ${columns[columnNum]}`;
+    if (this.#config.grid.columns) {
+      for (
+        let columnNum = 0;
+        columnNum < this.#config.grid.columns.length;
+        columnNum++
+      ) {
+        template += ` ${this.#config.grid.columns[columnNum]}`;
       }
     } else {
       template += ' auto';
     }
 
-    return template;
+    this.#screenElement.style.gridTemplate = template;
+
+    return true;
   }
 
-  constructor(historyLength) {
+  updateGrid(updateOptions) {
+    const row = updateOptions.row;
+    const column = updateOptions.column;
+
+    let newSize = updateOptions.newSize;
+    if (/^\d+$/v.test(newSize)) {
+      newSize += 'rem'; // Default units
+    }
+
+    if (typeof row !== 'undefined') {
+      this.#config.grid.rows[row] = newSize;
+    } else if (typeof column !== 'undefined') {
+      this.#config.grid.columns[column] = newSize;
+    }
+
+    this.updateGridTemplate();
+  }
+
+  constructor(historyLength, editHandler = null, postResetCallback = null) {
+    this.#editHandler = editHandler;
+    this.#postResetCallback = postResetCallback;
+
     document.addEventListener('keydown', (event) => {
       if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
         if (event.key === ' ') {
@@ -172,27 +204,28 @@ export default class Screen {
       this.#history = new HistoryManager(historyLength);
 
       const configElement = document.getElementById('config');
-      const config = JSON.parse(configElement.value);
+      this.#config = JSON.parse(configElement.value);
 
       this.#screenElement.innerHTML = '';
-      this.#screenElement.style.gridTemplate = Screen.generateGridTemplate(
-        config.grid
-      );
-      window.screenColor = config.color || 'white';
+      this.updateGridTemplate(this.#config.grid);
+      window.screenColor = this.#config.color || 'white';
       this.#screenElement.style.setProperty(
         '--screen-color',
         window.screenColor
       );
 
-      for (const counterID in config.counters) {
-        if (Object.hasOwn(config.counters, counterID)) {
+      for (const counterID in this.#config.counters) {
+        if (Object.hasOwn(this.#config.counters, counterID)) {
           this.#counters[counterID] = new Counter(
             this.#screenElement,
             counterID,
-            config.counters[counterID]
+            this.#config.counters[counterID],
+            this.#editHandler
           );
         }
       }
+
+      this.#postResetCallback?.(this, this.#config);
     } catch (error) {
       utils.log(error);
     }

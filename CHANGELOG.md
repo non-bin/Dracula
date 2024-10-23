@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Editor
+  - Rulers to edit the grid sizing
 
 ### Changed
 
@@ -44,6 +45,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Grid template is now generated from parameters in the config instead of baked as a string
 
 ### Removed
+
+- JSON config editor, and increment/reset buttons from the main interface
 
 ### Internal
 

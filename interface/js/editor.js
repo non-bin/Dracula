@@ -5,17 +5,6 @@ const HISTORY_LENGTH = 500;
 const sideRulerElement = document.getElementById('side-ruler');
 const topRulerElement = document.getElementById('top-ruler');
 
-const editHandler = (counter, params) => {
-  if (params?.event === 'move' || params?.event === 'resize') {
-    counter.updateLayout(params.event, params.direction);
-  } else {
-    return false;
-  }
-  console.log(counter, params);
-
-  return true;
-};
-
 const setRulerGridTemplates = ({ rows, columns }) => {
   let gridTemplate = '';
   for (let columnNum = 0; columnNum < columns.length; columnNum++) {
@@ -71,7 +60,39 @@ const resetRulers = (screen, config) => {
   }
 };
 
-const screen = new Screen(HISTORY_LENGTH, editHandler, resetRulers);
+/** @type {Screen} */
+// eslint-disable-next-line prefer-const
+let screen;
+
+/**
+ *
+ * @param {import('./counter.js').default} counter
+ * @param {*} params
+ * @return {*}
+ */
+
+const editHandler = (counter, params) => {
+  if (params?.event === 'move' || params?.event === 'resize') {
+    const newLayout = counter.updateLayout(params.event, params.direction);
+    const grid = screen.getGrid();
+    console.log(newLayout, grid);
+
+    if (newLayout.location[0] + newLayout.size[0] >= grid.columns.length) {
+      grid.columns.push('auto');
+    } else if (newLayout.location[1] + newLayout.size[1] >= grid.rows.length) {
+      grid.rows.push('auto');
+    }
+
+    screen.setGrid(grid);
+    resetRulers(screen, { grid });
+  } else {
+    return false;
+  }
+
+  return true;
+};
+
+screen = new Screen(HISTORY_LENGTH, editHandler, resetRulers);
 
 document.getElementById('increment').addEventListener('click', () => {
   screen.incrementAll();

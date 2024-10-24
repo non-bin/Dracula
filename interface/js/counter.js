@@ -6,7 +6,7 @@ export default class Counter {
   #phases;
   #layout = {
     location: [0, 0],
-    size: [1, 1]
+    size: [0, 0]
   };
   #max;
   #color;
@@ -118,8 +118,8 @@ export default class Counter {
   setLayout(layout = this.#layout, mainElement = this.#elements.main) {
     const x1 = layout.location[0] + 1; // CSS Grid locations are 1 indexed
     const y1 = layout.location[1] + 1;
-    const x2 = x1 + layout.size[0];
-    const y2 = y1 + layout.size[1];
+    const x2 = x1 + layout.size[0] + 1;
+    const y2 = y1 + layout.size[1] + 1;
 
     mainElement.style.gridArea = `${y1} / ${x1} / ${y2} / ${x2}`;
   }
@@ -141,7 +141,7 @@ export default class Counter {
         if (positionOrSize[0]) positionOrSize[0]--;
         break;
       case 'up':
-        if (positionOrSize[0]) positionOrSize[1]--;
+        if (positionOrSize[1]) positionOrSize[1]--;
         break;
       case 'down':
         positionOrSize[1]++;
@@ -152,6 +152,7 @@ export default class Counter {
     }
 
     this.setLayout();
+    return structuredClone(this.#layout);
   }
 
   updateCounterColor() {

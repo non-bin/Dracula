@@ -50,7 +50,7 @@ export default class Screen {
         name: 'Phase',
         layout: {
           location: [0, 0],
-          size: [2, 1]
+          size: [1, 0]
         },
         phases: [
           { name: 'Hem', max: 30 },
@@ -68,14 +68,14 @@ export default class Screen {
         color: 'green',
         layout: {
           location: [0, 1],
-          size: [1, 1]
+          size: [0, 0]
         }
       },
       colour: {
         name: 'Colour',
         layout: {
           location: [1, 1],
-          size: [1, 1]
+          size: [0, 0]
         },
         phases: [
           { name: 'Red', color: 'red' },
@@ -87,8 +87,12 @@ export default class Screen {
     }
   };
 
-  updateGridTemplate(grid) {
-    this.#config.grid ||= grid;
+  getGrid() {
+    return structuredClone(this.#config.grid);
+  }
+
+  setGrid(grid) {
+    this.#config.grid = grid;
 
     let template = '';
 
@@ -134,7 +138,7 @@ export default class Screen {
       this.#config.grid.columns[column] = newSize;
     }
 
-    this.updateGridTemplate();
+    this.setGrid(this.#config.grid);
   }
 
   constructor(historyLength, editHandler = null, postResetCallback = null) {
@@ -207,7 +211,7 @@ export default class Screen {
       this.#config = JSON.parse(configElement.value);
 
       this.#screenElement.innerHTML = '';
-      this.updateGridTemplate(this.#config.grid);
+      this.setGrid(this.#config.grid);
       window.screenColor = this.#config.color || 'white';
       this.#screenElement.style.setProperty(
         '--screen-color',

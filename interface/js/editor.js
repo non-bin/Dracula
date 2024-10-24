@@ -5,8 +5,15 @@ const HISTORY_LENGTH = 500;
 const sideRulerElement = document.getElementById('side-ruler');
 const topRulerElement = document.getElementById('top-ruler');
 
-const editHandler = (counter) => {
-  console.log(counter);
+const editHandler = (counter, params) => {
+  if (params?.event === 'move' || params?.event === 'resize') {
+    counter.updateLayout(params.event, params.direction);
+  } else {
+    return false;
+  }
+  console.log(counter, params);
+
+  return true;
 };
 
 const setRulerGridTemplates = ({ rows, columns }) => {

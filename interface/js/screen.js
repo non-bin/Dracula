@@ -216,12 +216,11 @@ export default class Screen {
 
       for (const counterID in this.#config.counters) {
         if (Object.hasOwn(this.#config.counters, counterID)) {
-          this.#counters[counterID] = new Counter(
-            this.#screenElement,
-            counterID,
-            this.#config.counters[counterID],
-            this.#editHandler
-          );
+          this.#counters[counterID] = new Counter({
+            screenElement: this.#screenElement,
+            config: this.#config.counters[counterID],
+            editHandler: this.#editHandler
+          });
         }
       }
 

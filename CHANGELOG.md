@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display the number of times a counter has reset
 - Editor
   - Save/share
+  - See if the grag'n'drop api would work
+  - Undo
 - Mobile interface
   - Tap to increment
   - Hold to open popup

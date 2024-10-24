@@ -103,24 +103,34 @@ a {
   border-radius: 10pt;
 }
 
+.move-buttons {
+  top: 10px;
+  left: 10px;
+}
+
+.resize-buttons {
+  bottom: 10px;
+  right: 10px;
+}
+
 .move-button-container {
   display: grid;
   grid-template: auto auto auto / auto auto auto;
-  gap: 10px;
+  gap: 0px;
   position: absolute;
-  top: 10px;
-  left: 1cqb;
+  pointer-events: none;
 }
 
 .arrow-button {
-  width: 60px;
-  height: 60px;
+  width: 40px;
+  height: 40px;
   background-color: #ccc;
   border: none;
   border-radius: 10px;
   cursor: pointer;
   position: relative;
   transition: background-color 0.3s;
+  pointer-events: all;
 }
 
 .arrow-button:hover {

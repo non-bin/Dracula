@@ -27,10 +27,9 @@ a {
   height: 100vh;
 }
 
-/* .controls {
-  display: grid;
-  min-height: 50vmin;
-} */
+.controls {
+  margin-top: 5px;
+}
 
 #container {
   box-sizing: border-box; /* Make width and height include boarder and padding */
@@ -177,4 +176,20 @@ a {
 .left-arrow .arrow {
   border-width: 10px 15px 10px 0;
   border-color: transparent white transparent transparent;
+}
+
+.right {
+  float: right;
+}
+
+footer a {
+  text-decoration: none;
+}
+
+footer {
+  height: 3rem;
+  text-align: center;
+  align-content: center;
+  background: #111;
+  margin-top: 30px;
 }

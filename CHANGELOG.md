@@ -30,16 +30,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Tap to increment
   - Hold to open popup
 - Keyboard shortcut reference popup (responsive to config)
+- Odometer
 
-## 1.0.0-alpha [Unreleased]
+## [Unreleased]
+
+## [1.0.0-alpha] - 2024-10-25
 
 ### Fixed
 
+- Crash when no layout, or no grid is given in config
+
 ### Added
 
+- Two new example configs
+- Undo history
 - Editor
   - Rulers to edit the grid sizing
-- Undo history
+  - Arrow buttons to move and resize counters
+  - Config Manager
 
 ### Changed
 
@@ -48,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- JSON config editor, and increment/reset buttons from the main interface
+- JSON config editor
+- Increment/reset buttons from the main interface
 
 ### Internal
 
@@ -106,6 +115,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plain JSON config
 
 [unreleased]: https://github.com/non-bin/Dracula/tree/dev
+[1.0.0-alpha]: https://github.com/non-bin/Dracula/releases/tag/v1.0.0-alpha
 [0.0.3]: https://github.com/non-bin/Dracula/releases/tag/v0.0.3
 [0.0.2]: https://github.com/non-bin/Dracula/releases/tag/v0.0.2
 [0.0.1]: https://github.com/non-bin/Dracula/releases/tag/v0.0.1

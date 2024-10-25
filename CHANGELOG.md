@@ -5,33 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## ToDo
-
-- Other trigger methods
-  - Phase change or full reset of another counter
-    - Hidden counters
-  - Separate trigger button
-    - Incriment/undo/reset specific counter
-    - Next/prev phase
-- Let counter phase set
-  - Layout
-  - Config of other counters
-- Other function blocks
-  - Timer
-  - Dummy (spacer, text, title)
-- Sounds
-- Trigger fullscreen colour from counter phase
-- Display the number of times a counter has reset
-- Editor
-  - Save/share
-  - See if the grag'n'drop api would work
-  - Undo
-- Mobile interface
-  - Tap to increment
-  - Hold to open popup
-- Keyboard shortcut reference popup (responsive to config)
-- Odometer
-
 ## [Unreleased]
 
 ## [1.0.0-alpha] - 2024-10-25

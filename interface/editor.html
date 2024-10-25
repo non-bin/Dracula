@@ -31,12 +31,20 @@
     </div>
 
     <div class="controls">
-      <button id="increment">Increment (Press or hold space)</button>
-      <button id="reset">Reset</button>
+      <button id="increment">Increment (Space)</button>
+      <button id="undo">Undo (Z)</button>
+      <button id="reset">Reset (R)</button>
+      <button id="save">Save Changes</button>
+      <label for="config-id-selector">Select Layout:</label>
+      <select id="config-id-selector"></select>
+      <button id="exit">Finished Editing</button>
+      <div class="right">
+        <button id="reset-all-configs">Reset All Configs (WARNING)</button>
+      </div>
     </div>
 
     <div id="error"></div>
-    <textarea id="config"></textarea>
+
     <footer>
       <a href="https://github.com/non-bin/Dracula">Counter Dracula</a>
       v1.0.0-alpha by

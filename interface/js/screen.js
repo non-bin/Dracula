@@ -1,6 +1,6 @@
 import * as utils from './utilities.js';
+import ConfigManager from './configManager.js';
 import Counter from './counter.js';
-import exampleConfigs from './exampleConfigs.js';
 import HistoryManager from './historyManager.js';
 
 /**
@@ -42,8 +42,56 @@ export default class Screen {
   /** @type {Counter[]} */ #counters;
   /** @type {HistoryManager} */ #history;
   /** @type {CounterEditHandler} */ #editHandler;
-  /** @type { PostResetCallback } */ #postResetCallback;
+  /** @type {PostResetCallback } */ #postResetCallback;
   /** @type {ScreenConfig} */ #config;
+  /** @type {ConfigManager} */ #configManager;
+
+  /**
+   * @param {Number?} historyLength
+   * @param {CounterEditHandler?} editHandler
+   * @param {PostResetCallback?} postResetCallback
+   */
+  constructor(historyLength, editHandler = null, postResetCallback = null) {
+    this.#editHandler = editHandler;
+    this.#postResetCallback = postResetCallback;
+
+    const searchParams = new URL(window.location).searchParams;
+    this.#configManager = new ConfigManager(searchParams.get('configID'));
+
+    if (searchParams.get('resetConfigs')) {
+      this.#configManager.initialise();
+    }
+
+    if (searchParams.get('config')) {
+      this.#configManager.config = searchParams.get('config');
+    }
+
+    this.#config = this.#configManager.config;
+
+    document.addEventListener('keydown', (event) => {
+      if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
+        if (event.key === ' ') {
+          event.preventDefault();
+          event.stopPropagation();
+
+          this.incrementAll();
+        } else if (event.key === 'z') {
+          event.preventDefault();
+          event.stopPropagation();
+
+          this.undo();
+        } else if (event.key === 'r') {
+          event.preventDefault();
+          event.stopPropagation();
+
+          this.reset(historyLength);
+        }
+      }
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+      this.reset(historyLength);
+    });
+  }
 
   /**
    * Get the current screen grid config
@@ -117,48 +165,6 @@ export default class Screen {
   }
 
   /**
-   * @param {Number?} historyLength
-   * @param {CounterEditHandler?} editHandler
-   * @param {PostResetCallback?} postResetCallback
-   */
-  constructor(historyLength, editHandler = null, postResetCallback = null) {
-    this.#editHandler = editHandler;
-    this.#postResetCallback = postResetCallback;
-
-    document.addEventListener('keydown', (event) => {
-      if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
-        if (event.key === ' ') {
-          event.preventDefault();
-          event.stopPropagation();
-
-          this.incrementAll();
-        } else if (event.key === 'z') {
-          event.preventDefault();
-          event.stopPropagation();
-
-          this.undo();
-        } else if (event.key === 'r') {
-          event.preventDefault();
-          event.stopPropagation();
-
-          this.resetCounters(historyLength);
-        }
-      }
-    });
-    document.addEventListener('DOMContentLoaded', () => {
-      const searchParams = new URL(window.location).searchParams;
-      document.getElementById('config').value = JSON.stringify(
-        searchParams.get('config') ||
-          exampleConfigs[searchParams.get('configName')] ||
-          exampleConfigs.minimal,
-        null,
-        2 // eslint-disable-line no-magic-numbers
-      );
-      this.resetCounters(historyLength);
-    });
-  }
-
-  /**
    * Loop through all counters, increment them, and save the old state to the history
    */
   incrementAll() {
@@ -195,15 +201,14 @@ export default class Screen {
    *
    * @param {Number?} historyLength
    */
-  resetCounters(historyLength) {
+  reset(historyLength) {
     try {
       if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
 
       this.#counters = {};
       this.#history = new HistoryManager(historyLength);
 
-      const configElement = document.getElementById('config');
-      this.#config = JSON.parse(configElement.value);
+      this.#config = this.#configManager.config;
 
       this.#screenElement.innerHTML = '';
       this.setGrid(this.#config.grid || { rows: ['auto'], columns: ['auto'] });
@@ -227,5 +232,43 @@ export default class Screen {
     } catch (error) {
       utils.log(error);
     }
+  }
+
+  /**
+   * @returns {String[]} List of the IDs of all saved configs
+   */
+  getAvailableConfigIDs() {
+    return this.#configManager.getAvailableConfigsList();
+  }
+
+  /**
+   * @returns {String}
+   */
+  getCurrentConfigID() {
+    return this.#configManager.currentConfigID;
+  }
+
+  /**
+   * Returns false if the switch failed
+   *
+   * @param {String} configID
+   * @returns {ScreenConfig|false}
+   */
+  switchConfig(configID) {
+    if (!this.#configManager.switchConfig(configID)) return false;
+
+    this.reset();
+    return true;
+  }
+
+  saveChanges() {
+    this.#configManager.saveChanges();
+  }
+
+  /**
+   * Deletes all saved configs, and reverts to the default state
+   */
+  resetAllConfigs() {
+    this.#configManager.initialise();
   }
 }

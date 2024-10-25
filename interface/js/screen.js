@@ -1,5 +1,6 @@
 import * as utils from './utilities.js';
 import Counter from './counter.js';
+import exampleConfigs from './exampleConfigs.js';
 import HistoryManager from './historyManager.js';
 
 /**
@@ -37,51 +38,6 @@ import HistoryManager from './historyManager.js';
 
 export default class Screen {
   #screenElement = document.getElementById('screen');
-
-  static defaultConfigs = {
-    grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
-    color: 'black',
-    counters: {
-      phase: {
-        name: 'Phase',
-        layout: {
-          location: [0, 0],
-          size: [1, 0]
-        },
-        phases: [
-          { name: 'Hem', max: 30 },
-          { name: 'Ankle', max: 50 },
-          { name: 'Heel Decrease', max: 15 },
-          { name: 'Heal Increase', max: 15 },
-          { name: 'Foot', max: 60 },
-          { name: 'Toe Decrease', max: 15 },
-          { name: 'Toe Increase', max: 15 },
-          { name: 'Waste Yarn' }
-        ]
-      },
-      total: {
-        name: 'Total',
-        color: 'green',
-        layout: {
-          location: [0, 1],
-          size: [0, 0]
-        }
-      },
-      colour: {
-        name: 'Colour',
-        layout: {
-          location: [1, 1],
-          size: [0, 0]
-        },
-        phases: [
-          { name: 'Red', color: 'red' },
-          { name: 'Green', color: 'green' },
-          { name: 'Black', color: 'black', max: 2 }
-        ],
-        max: 3
-      }
-    }
-  };
 
   /** @type {Counter[]} */ #counters;
   /** @type {HistoryManager} */ #history;
@@ -190,8 +146,11 @@ export default class Screen {
       }
     });
     document.addEventListener('DOMContentLoaded', () => {
+      const searchParams = new URL(window.location).searchParams;
       document.getElementById('config').value = JSON.stringify(
-        Screen.defaultConfigs,
+        searchParams.get('config') ||
+          exampleConfigs[searchParams.get('configName')] ||
+          exampleConfigs.minimal,
         null,
         2 // eslint-disable-line no-magic-numbers
       );

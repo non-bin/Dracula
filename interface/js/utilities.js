@@ -1,3 +1,10 @@
+/**
+ * If a===b return false, otherwise return a
+ *
+ * @param {*} a
+ * @param {*} b
+ * @return {*}
+ */
 // eslint-disable-next-line id-length
 export const retIfNotSame = (a, b) => {
   if (a === b) {
@@ -7,7 +14,13 @@ export const retIfNotSame = (a, b) => {
   return a;
 };
 
-// https://stackoverflow.com/a/11381730 http://detectmobilebrowsers.com/
+/**
+ * Determine if the current device is a mobile phone or tablet (true), or computer (false)
+ *
+ * https://stackoverflow.com/a/11381730 http://detectmobilebrowsers.com/
+ *
+ * @return {Boolean}
+ */
 export const mobileOrTabletCheck = () => {
   let check = false;
   /* eslint-disable */

@@ -1,11 +1,27 @@
 import Screen from './screen.js';
+/** @type {Screen} */
+// eslint-disable-next-line prefer-const
+let screen;
+
+/**
+ * @typedef {import('./counter.js').default} Counter
+ * @typedef {import('./counter.js').CounterEditHandler} CounterEditHandler
+ * @typedef {import('./screen.js').ScreenGrid} ScreenGrid
+ */
 
 const HISTORY_LENGTH = 500;
 
 const sideRulerElement = document.getElementById('side-ruler');
 const topRulerElement = document.getElementById('top-ruler');
 
-const setRulerGridTemplates = ({ rows, columns }) => {
+/**
+ * Set the grid templates for the rulers, and update the display
+ *
+ * @param {ScreenGrid} params
+ */
+const setRulerGridTemplates = (params) => {
+  const { rows, columns } = params;
+
   let gridTemplate = '';
   for (let columnNum = 0; columnNum < columns.length; columnNum++) {
     gridTemplate += `${columns[columnNum]} `;
@@ -19,7 +35,14 @@ const setRulerGridTemplates = ({ rows, columns }) => {
   sideRulerElement.style.gridTemplate = `${gridTemplate}/auto`;
 };
 
-const resetRulers = (screen, config) => {
+/**
+ * Reset rulers from a new config
+ *
+ * @param {Object} config
+ * @param {ScreenGrid} config.grid
+ * @param {Screen?} alternateScreen
+ */
+const resetRulers = (config, alternateScreen = screen) => {
   const { rows, columns } = config.grid;
 
   topRulerElement.innerHTML = '';
@@ -38,7 +61,10 @@ const resetRulers = (screen, config) => {
     );
     inputElement.value = columns[columnNum];
     inputElement.addEventListener('input', (event) => {
-      screen.updateGrid({ column: columnNum, newSize: event.target.value });
+      alternateScreen.updateGrid({
+        column: columnNum,
+        newSize: event.target.value
+      });
       setRulerGridTemplates(config.grid);
     });
   }
@@ -54,23 +80,13 @@ const resetRulers = (screen, config) => {
     );
     inputElement.value = rows[rowNum];
     inputElement.addEventListener('input', (event) => {
-      screen.updateGrid({ row: rowNum, newSize: event.target.value });
+      alternateScreen.updateGrid({ row: rowNum, newSize: event.target.value });
       setRulerGridTemplates(config.grid);
     });
   }
 };
 
-/** @type {Screen} */
-// eslint-disable-next-line prefer-const
-let screen;
-
-/**
- *
- * @param {import('./counter.js').default} counter
- * @param {*} params
- * @return {*}
- */
-
+/** @type {CounterEditHandler} */
 const editHandler = (counter, params) => {
   if (params?.event === 'move' || params?.event === 'resize') {
     const newLayout = counter.updateLayout(params.event, params.direction);
@@ -84,7 +100,7 @@ const editHandler = (counter, params) => {
     }
 
     screen.setGrid(grid);
-    resetRulers(screen, { grid });
+    resetRulers({ grid });
   } else {
     return false;
   }

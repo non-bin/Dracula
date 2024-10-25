@@ -2,45 +2,41 @@ import * as utils from './utilities.js';
 import Counter from './counter.js';
 import HistoryManager from './historyManager.js';
 
-/* All counter obj parameters:
-{
-  internalCounterID: {
-    name: 'Counter Display Name',
-    layout: {
-      location: [0, 0], // x and y location of the top left corner
-      size: [2, 1] // width and height of the counter
-    },
-    max: 12, // Number to stop counting at (inclusive), or Infinity, or omit to imply Infinity
-    phases: [
-      {
-        name: 'Phase Display Name',
-        max: 30, // Number, Infinity, or omit to inherit the counter's max
-      },
-      {...}
-    ],
-    state: { // Used internally
-      value: 16, // Current count we're up to (within a state if it has them)
-      phase: 2, // Current phase number
-      max: 23 // Current max (of the phase if it has one)
-    },
-    elements: { // Used internally
-      main: <DOM Node>, // Counter div
-      name: <DOM Node>, // Counter name element
-      phase: <DOM Node>, // Phase name
-      value: <DOM Node>, // Current value
-      max: <DOM Node>, // Current max
-    }
-  },
-}
-*/
+/**
+ * @typedef {import('./counter.js').CounterEditHandler} CounterEditHandler
+ * @typedef {import('./counter.js').CounterLayout} CounterLayout
+ * @typedef {import('./counter.js').CounterConfig} CounterConfig
+ */
+
+/**
+ * @typedef {Object} ScreenGrid
+ * @property {String[]} rows
+ * @property {String[]} columns
+ */
+
+/**
+ * @typedef {Object} ScreenConfig
+ * @property {ScreenGrid?} grid
+ * @property {String?} color
+ * @property {Object.<string, CounterConfig>} counters
+ */
+
+/**
+ * @callback PostResetCallback
+ *
+ * @param {ScreenConfig} config
+ * @param {Screen} screen
+ */
+
+/**
+ * @typedef {Object} ScreenGridUpdateOptions
+ * @property {Number?} updateOptions.row
+ * @property {Number?} updateOptions.column
+ * @property {String} updateOptions.newSize
+ */
 
 export default class Screen {
   #screenElement = document.getElementById('screen');
-  #counters;
-  #history;
-  #editHandler;
-  #postResetCallback;
-  #config;
 
   static defaultConfigs = {
     grid: { rows: ['60%', 'auto'], columns: ['40%', 'auto'] },
@@ -87,13 +83,30 @@ export default class Screen {
     }
   };
 
+  /** @type {Counter[]} */ #counters;
+  /** @type {HistoryManager} */ #history;
+  /** @type {CounterEditHandler} */ #editHandler;
+  /** @type { PostResetCallback } */ #postResetCallback;
+  /** @type {ScreenConfig} */ #config;
+
+  /**
+   * Get the current screen grid config
+   *
+   * @returns {ScreenGrid}
+   */
   getGrid() {
     return structuredClone(this.#config.grid);
   }
 
+  /**
+   * Set a new grid layout for the screen, and render the changes
+   *
+   * @param {ScreenGrid} grid
+   */
   setGrid(grid) {
     this.#config.grid = grid;
 
+    // CSS grid-template: 'rowWidth rowWidth ... / columnHeight columnHeight ...'
     let template = '';
 
     if (this.#config.grid.rows) {
@@ -119,10 +132,14 @@ export default class Screen {
     }
 
     this.#screenElement.style.gridTemplate = template;
-
-    return true;
   }
 
+  /**
+   * Make a change to the screen grid, then save, render, and return the new grid
+   *
+   * @param {ScreenGridUpdateOptions} updateOptions
+   * @returns {ScreenGrid}
+   */
   updateGrid(updateOptions) {
     const row = updateOptions.row;
     const column = updateOptions.column;
@@ -139,8 +156,15 @@ export default class Screen {
     }
 
     this.setGrid(this.#config.grid);
+
+    return this.getGrid();
   }
 
+  /**
+   * @param {Number?} historyLength
+   * @param {CounterEditHandler?} editHandler
+   * @param {PostResetCallback?} postResetCallback
+   */
   constructor(historyLength, editHandler = null, postResetCallback = null) {
     this.#editHandler = editHandler;
     this.#postResetCallback = postResetCallback;
@@ -175,6 +199,9 @@ export default class Screen {
     });
   }
 
+  /**
+   * Loop through all counters, increment them, and save the old state to the history
+   */
   incrementAll() {
     const states = {};
     for (const counterID in this.#counters) {
@@ -186,6 +213,9 @@ export default class Screen {
     this.#history.push(states);
   }
 
+  /**
+   * Take a state from the history and apply it
+   */
   undo() {
     const newStates = this.#history.pop();
     if (!newStates) {
@@ -200,6 +230,12 @@ export default class Screen {
     }
   }
 
+  /**
+   * Overwrite the current counters and states, with the initial state from config
+   * (Called when the page loads, or when the user requests a reset)
+   *
+   * @param {Number?} historyLength
+   */
   resetCounters(historyLength) {
     try {
       if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
@@ -228,7 +264,7 @@ export default class Screen {
         }
       }
 
-      this.#postResetCallback?.(this, this.#config);
+      this.#postResetCallback?.(this.#config, this);
     } catch (error) {
       utils.log(error);
     }

@@ -72,7 +72,7 @@ export default class Counter {
     this.#state = { value: 0 };
 
     // Main element
-    this.#layout = config.layout;
+    this.#layout = config.layout || { location: [0, 0], size: [0, 0] };
     const mainElement = document.createElement('div');
     mainElement.className = 'counter';
     this.#elements.main = screenElement.appendChild(mainElement);

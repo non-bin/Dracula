@@ -109,7 +109,7 @@ export default class Screen {
     // CSS grid-template: 'rowWidth rowWidth ... / columnHeight columnHeight ...'
     let template = '';
 
-    if (this.#config.grid.rows) {
+    if (this.#config.grid?.rows) {
       for (let rowNum = 0; rowNum < this.#config.grid.rows.length; rowNum++) {
         template += `${this.#config.grid.rows[rowNum]} `;
       }
@@ -119,7 +119,7 @@ export default class Screen {
 
     template += '/';
 
-    if (this.#config.grid.columns) {
+    if (this.#config.grid?.columns) {
       for (
         let columnNum = 0;
         columnNum < this.#config.grid.columns.length;
@@ -247,7 +247,7 @@ export default class Screen {
       this.#config = JSON.parse(configElement.value);
 
       this.#screenElement.innerHTML = '';
-      this.setGrid(this.#config.grid);
+      this.setGrid(this.#config.grid || { rows: ['auto'], columns: ['auto'] });
       window.screenColor = this.#config.color || 'white';
       this.#screenElement.style.setProperty(
         '--screen-color',

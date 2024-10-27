@@ -10,10 +10,10 @@ export default {
   basic: {
     grid: { rows: ['auto'], columns: ['auto'] },
     color: 'black',
-    max: 15,
     counters: {
       phase: {
         name: 'Phase',
+        max: 15,
         phases: [
           { name: 'Hem', max: 30 },
           { name: 'Ankle', max: 50 },

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0-alpha.1] - 2024-10-27
+
+### Fixed
+
+- Basic example heel increase max was infinity
+
 ## [1.0.0-alpha] - 2024-10-25
 
 ### Fixed
@@ -88,6 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Plain JSON config
 
 [unreleased]: https://github.com/non-bin/Dracula/tree/dev
+[1.0.0-alpha.1]: https://github.com/non-bin/Dracula/releases/tag/v1.0.0-alpha.1
 [1.0.0-alpha]: https://github.com/non-bin/Dracula/releases/tag/v1.0.0-alpha
 [0.0.3]: https://github.com/non-bin/Dracula/releases/tag/v0.0.3
 [0.0.2]: https://github.com/non-bin/Dracula/releases/tag/v0.0.2

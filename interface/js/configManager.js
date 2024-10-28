@@ -18,7 +18,7 @@ export default class ConfigManager {
    */
   constructor(configID) {
     if (!Object.hasOwn(localStorage, 'configs')) {
-      ConfigManager.initialiseConfigs();
+      this.initialiseConfigs();
     }
 
     this.#configs = JSON.parse(localStorage.configs);

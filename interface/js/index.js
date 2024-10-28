@@ -126,7 +126,9 @@ window.addEventListener('click', (event) => {
 });
 
 document.getElementById('backToEditorButton').addEventListener('click', () => {
-  window.history.back();
+  const newURL = new URL('./editor.html', window.location);
+  newURL.searchParams.set('configID', screen.getCurrentConfigID());
+  window.location = newURL;
 });
 
 document

@@ -59,7 +59,7 @@ export default class Screen {
     this.#configManager = new ConfigManager(searchParams.get('configID'));
 
     if (searchParams.get('resetConfigs')) {
-      this.#configManager.initialise();
+      this.initialiseConfigs();
     }
 
     if (searchParams.get('config')) {
@@ -268,7 +268,58 @@ export default class Screen {
   /**
    * Deletes all saved configs, and reverts to the default state
    */
-  resetAllConfigs() {
-    this.#configManager.initialise();
+  initialiseConfigs() {
+    this.#configManager.initialiseConfigs();
+  }
+
+  /**
+   * Deletes all saved configs, and reverts to the default state
+   */
+  static initialisePreferences() {
+    ConfigManager.initialisePreferences();
+  }
+
+  /**
+   * Validate and save a user preference
+   *
+   * @param {String} key
+   * @param {*} value
+   */
+  static setPreference(key, value) {
+    if (typeof key !== 'string') {
+      throw new Error('Key must be a string');
+    }
+    if (typeof value === 'undefined') {
+      throw new Error('Value must not be undefined');
+    }
+
+    switch (key) {
+      case 'mobileFullscreen':
+        utils.assertType(value, 'boolean');
+        break;
+
+      default:
+        throw new Error(`Unknown preference key: ${key}`);
+    }
+
+    ConfigManager.setPreference(key, value);
+  }
+
+  /**
+   * Get a user preference, or the default value if undefined
+   *
+   * @param {String} key
+   * @returns {*}
+   */
+  static getPreference(key) {
+    const preferenceValue = ConfigManager.getPreference(key);
+
+    switch (key) {
+      case 'mobileFullscreen':
+        return utils.fallbackIfInvalidType(preferenceValue, 'boolean', true);
+
+      default:
+        throw new Error(`Unknown preference key: ${key}`);
+    }
   }
 }

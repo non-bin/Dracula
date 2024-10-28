@@ -18,7 +18,7 @@ export default class ConfigManager {
    */
   constructor(configID) {
     if (!Object.hasOwn(localStorage, 'configs')) {
-      this.initialise();
+      ConfigManager.initialiseConfigs();
     }
 
     this.#configs = JSON.parse(localStorage.configs);
@@ -31,10 +31,19 @@ export default class ConfigManager {
   /**
    * Reset configs to defaults
    */
-  initialise() {
+  initialiseConfigs() {
     this.#configs = structuredClone(exampleConfigs);
     this.switchConfig(this.getAvailableConfigsList()[0]);
     this.saveChanges();
+  }
+
+  /**
+   * Reset user preferences to defaults
+   */
+  static initialisePreferences() {
+    const configs = localStorage.configs;
+    localStorage.clear();
+    localStorage.configs = configs;
   }
 
   /**
@@ -67,5 +76,30 @@ export default class ConfigManager {
 
   get currentConfigID() {
     return this.#currentConfigID;
+  }
+
+  /**
+   * Get a stored preference value from local storage, and convert it back from JSON
+   *
+   * @param {String} key
+   * @returns {*}
+   */
+  static getPreference(key) {
+    if (key === 'configs') throw new Error("Illegal preference key 'configs'");
+    if (!localStorage[key]) return null;
+
+    return JSON.parse(localStorage[key]);
+  }
+
+  /**
+   * Convert value to a JSON string, and save it to the preferences store
+   *
+   * @param {String} key
+   * @param {*} value
+   */
+  static setPreference(key, value) {
+    if (key === 'configs') throw new Error("Illegal preference key 'configs'");
+
+    localStorage[key] = JSON.stringify(value);
   }
 }

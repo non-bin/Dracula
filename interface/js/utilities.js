@@ -58,3 +58,47 @@ export const log = (obj) => {
     console.error(obj); // eslint-disable-line no-console
   }
 };
+
+/**
+ * Ensure a value is of the correct type, and return the fallback if invalid
+ *
+ * @param {*} value
+ * @param {'object'|'boolean'|'number'|'bigint'|'string'|'symbol'|'function'|'object'} type
+ * @param {*} fallback
+ * @returns {*}
+ */
+export const fallbackIfInvalidType = (value, type, fallback) => {
+  if (typeof value !== type) {
+    return fallback;
+  }
+
+  return value;
+};
+
+/**
+ * Ensure a value is in the list of allowed values, and return the fallback if invalid
+ *
+ * @param {*} value
+ * @param {Array} type
+ * @param {*} fallback
+ * @returns {*}
+ */
+export const fallbackIfInvalidValue = (value, allowedValues, fallback) => {
+  if (!allowedValues.includes(value)) {
+    return fallback;
+  }
+
+  return value;
+};
+
+/**
+ * Throw a type error if value is not the specified type
+ *
+ * @param {*} value
+ * @param {('object'|'boolean'|'number'|'bigint'|'string'|'symbol'|'function'|'object')} type
+ */
+export const assertType = (value, type) => {
+  if (typeof value !== type) {
+    throw new TypeError(`Value must be of type${type}`);
+  }
+};

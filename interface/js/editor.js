@@ -178,8 +178,8 @@ document.getElementById('toggleFullscreen').addEventListener('click', () => {
   utils.requestToggleFullscreen();
 });
 document.getElementById('reset-all-configs').addEventListener('click', () => {
-  screen.resetAllConfigs();
-  screen.reset();
+  screen.initialiseConfigs();
+  screen.reset(HISTORY_LENGTH);
 });
 
 window.addEventListener('beforeunload', (event) => {

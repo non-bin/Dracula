@@ -130,6 +130,10 @@ document.getElementById('backToEditorButton').addEventListener('click', () => {
   newURL.searchParams.set('configID', screen.getCurrentConfigID());
   window.location = newURL;
 });
+document.getElementById('resetButton').addEventListener('click', () => {
+  screen.reset(HISTORY_LENGTH);
+  hideModal();
+});
 
 document
   .getElementById('fullscreenToggle')

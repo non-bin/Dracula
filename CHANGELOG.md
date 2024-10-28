@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Preference system
+- Count interface modal
 - Touch support
 - Fullscreen toggle in editor
 - Auto fullscreen in mobile counter interface

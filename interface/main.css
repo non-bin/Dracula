@@ -193,3 +193,14 @@ footer {
   background: #111;
   margin-top: 30px;
 }
+
+#touchCatcher {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0);
+  z-index: 100;
+  display: none; /* Explicity enable it in js */
+}

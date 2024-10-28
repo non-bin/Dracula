@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Internal
+### Added
 
-- Added preference system
+- Preference system
+- Touch support
 
 ## [1.0.0-alpha.1] - 2024-10-27
 

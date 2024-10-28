@@ -149,7 +149,10 @@ export default [
       'no-void': 'error',
       'no-warning-comments': [
         'error',
-        { location: 'start', terms: ['todo', 'fixme', 'xxx', 'broken', '!'] }
+        {
+          location: 'start',
+          terms: ['?', 'todo', 'fixme', 'xxx', '!', 'urgent', 'broken']
+        }
       ],
       'object-shorthand': 'error',
       'one-var': ['error', 'never'],

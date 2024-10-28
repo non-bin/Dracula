@@ -203,8 +203,6 @@ export default class Screen {
    */
   reset(historyLength) {
     try {
-      if (utils.mobileOrTabletCheck()) utils.requestFullscreen();
-
       this.#counters = {};
       this.#history = new HistoryManager(historyLength);
 

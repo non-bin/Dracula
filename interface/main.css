@@ -37,6 +37,11 @@ a {
   width: 100vw;
 }
 
+.editor > #screen {
+  height: min-content;
+  min-height: 100%;
+}
+
 #screen {
   grid-area: 2 / 2 / 3 / 3;
   display: grid;
@@ -72,6 +77,8 @@ a {
 .container.editor {
   display: grid;
   grid-template: 40pt auto / 40pt auto;
+  height: auto;
+  min-height: 100vh;
 }
 
 .ruler {

@@ -3,31 +3,36 @@ import Screen from './screen.js';
 
 const HISTORY_LENGTH = 500;
 const LONG_TOUCH_DURATION = 500; // ms
+const SPEED_MODE_INTERVAL = 50; // ms
 
 const screen = new Screen(HISTORY_LENGTH);
 
 let longTouchTimer;
+let speedModeTimer;
 let touchPosition;
 
-/**
- *
- * @param {TouchEvent} touchEvent
- */
-const longTouch = (touchEvent) => {
-  console.log('longTouch', touchPosition);
+const longTouch = () => {
+  const positionAsProportion = utils.getPositionAsProportion(touchPosition);
+
+  if (positionAsProportion[0] < 0.5) {
+    screen.reset();
+  } else {
+    speedModeTimer = setInterval(
+      () => screen.incrementAll(),
+      SPEED_MODE_INTERVAL
+    );
+  }
 
   longTouchTimer = null;
 };
 
-/**
- *
- * @param {TouchEvent} touchEvent
- */
-const shortTouch = (touchEvent) => {
-  console.log('shortTouch', touchPosition);
+const shortTouch = () => {
+  const positionAsProportion = utils.getPositionAsProportion(touchPosition);
 
-  if (Screen.getPreference('mobileFullscreen')) {
-    utils.requestFullscreen();
+  if (positionAsProportion[0] < 0.5) {
+    screen.undo();
+  } else {
+    screen.incrementAll();
   }
 };
 
@@ -35,10 +40,15 @@ const shortTouch = (touchEvent) => {
  * @param {TouchEvent} touchEvent
  */
 const touchStart = (touchEvent) => {
+  touchEvent.preventDefault(); // Prevent the browser from processing emulated mouse events
+
+  if (Screen.getPreference('mobileFullscreen')) {
+    utils.requestFullscreen();
+  }
+
   const touch = touchEvent.targetTouches.item(0);
   touchPosition = [touch.clientX, touch.clientY];
 
-  touchEvent.preventDefault(); // Prevent the browser from processing emulated mouse events
   longTouchTimer = setTimeout(longTouch, LONG_TOUCH_DURATION, touchEvent);
 };
 
@@ -55,6 +65,11 @@ const touchEnd = (touchEvent) => {
   } /* else {
     // Lifted finger after long touch
   } */
+
+  if (speedModeTimer) {
+    clearInterval(speedModeTimer);
+    speedModeTimer = null;
+  }
 };
 
 const touchMove = () => {
@@ -66,6 +81,10 @@ const touchCancel = () => {
     clearTimeout(longTouchTimer);
     longTouchTimer = null;
   }
+  if (speedModeTimer) {
+    clearInterval(speedModeTimer);
+    speedModeTimer = null;
+  }
 };
 
 if (utils.mobileOrTabletCheck()) {
@@ -76,8 +95,3 @@ if (utils.mobileOrTabletCheck()) {
   touchCatcherElement.addEventListener('touchcancel', touchCancel, false);
   touchCatcherElement.addEventListener('touchend', touchEnd, false);
 }
-
-// Expose the screen object to the global scope for debugging
-// URGENT: Remove this before production
-window.screen = screen;
-window.Screen = Screen;

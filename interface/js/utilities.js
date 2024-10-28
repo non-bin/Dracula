@@ -102,3 +102,17 @@ export const assertType = (value, type) => {
     throw new TypeError(`Value must be of type${type}`);
   }
 };
+
+/**
+ * Convert a position from pixels to a proportion of the screen size
+ *
+ * @param {Number[]} positionCoordinates
+ * @returns {Number[]}
+ */
+export const getPositionAsProportion = (positionCoordinates) => {
+  const [posX, posY] = positionCoordinates;
+  const windowWidth = window.screen.availWidth;
+  const windowHeight = window.screen.availHeight;
+
+  return [posX / windowWidth, posY / windowHeight];
+};

@@ -1,4 +1,6 @@
+import * as utils from './utilities.js';
 import Screen from './screen.js';
+
 /** @type {Screen} */
 // eslint-disable-next-line prefer-const
 let screen;
@@ -171,6 +173,10 @@ document
   .addEventListener('change', (event) => {
     screen.switchConfig(event.target.value);
   });
+
+document.getElementById('toggleFullscreen').addEventListener('click', () => {
+  utils.requestToggleFullscreen();
+});
 document.getElementById('reset-all-configs').addEventListener('click', () => {
   screen.resetAllConfigs();
   screen.reset();

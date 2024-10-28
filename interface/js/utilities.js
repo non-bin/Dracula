@@ -52,6 +52,26 @@ export const requestFullscreen = () => {
   }
 };
 
+export const requestCloseFullscreen = () => {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    /* Safari */
+    document.webkitExitFullscreen();
+  } else if (document.msExitFullscreen) {
+    /* IE11 */
+    document.msExitFullscreen();
+  }
+};
+
+export const requestToggleFullscreen = () => {
+  if (document.fullscreenElement) {
+    requestCloseFullscreen();
+  } else {
+    requestFullscreen();
+  }
+};
+
 export const log = (obj) => {
   if (obj instanceof Error) {
     document.getElementById('error').innerText = obj.message;

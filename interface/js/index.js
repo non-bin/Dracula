@@ -7,6 +7,17 @@ const SPEED_MODE_INTERVAL = 50; // ms
 
 const screen = new Screen(HISTORY_LENGTH);
 
+const modalElement = document.getElementById('modal');
+const modalCloseElement = document.getElementById('modal-close');
+
+const showModal = () => {
+  modalElement.style.display = 'block';
+};
+
+const hideModal = () => {
+  modalElement.style.display = 'none';
+};
+
 let longTouchTimer;
 let speedModeTimer;
 let touchPosition;
@@ -15,7 +26,7 @@ const longTouch = () => {
   const positionAsProportion = utils.getPositionAsProportion(touchPosition);
 
   if (positionAsProportion[0] < 0.5) {
-    screen.reset();
+    showModal();
   } else {
     speedModeTimer = setInterval(
       () => screen.incrementAll(),
@@ -95,3 +106,12 @@ if (utils.mobileOrTabletCheck()) {
   touchCatcherElement.addEventListener('touchcancel', touchCancel, false);
   touchCatcherElement.addEventListener('touchend', touchEnd, false);
 }
+
+modalCloseElement.addEventListener('click', () => {
+  hideModal();
+});
+window.addEventListener('click', (event) => {
+  if (event.target === modalElement) {
+    hideModal();
+  }
+});

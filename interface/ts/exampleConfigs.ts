@@ -1,7 +1,6 @@
-/**
- * @type {import('./screen.js').ScreenConfig[]}
- */
-export default {
+import { ScreenConfig } from './screen';
+
+const exampleConfigs: { [s: string]: ScreenConfig } = {
   minimal: {
     counters: {
       main: {}
@@ -72,5 +71,3 @@ export default {
     }
   }
 };
-
-// Github Pages Debug Comment

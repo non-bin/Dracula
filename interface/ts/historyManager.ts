@@ -1,20 +1,15 @@
 export default class HistoryManager {
   #maxLength = 500;
-  /** @type {*[]} */ #states = [];
+  #states: any[] = [];
 
-  /**
-   * @param {Number?} maxLength
-   */
-  constructor(maxLength) {
+  constructor(maxLength?: number) {
     this.#maxLength = maxLength || this.#maxLength;
   }
 
   /**
    * Add a state to the history
-   *
-   * @param {*} newState
    */
-  push(newState) {
+  push(newState: {}) {
     if (this.#states.length >= this.#maxLength) {
       this.#states.shift(); // Remove the oldest item
     }
@@ -24,10 +19,8 @@ export default class HistoryManager {
 
   /**
    * Remove a state from the history and return it
-   *
-   * @return {*} The state
    */
-  pop() {
+  pop(): any {
     return this.#states.pop();
   }
 }

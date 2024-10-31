@@ -6,6 +6,7 @@
   "license": "GPL-3.0-or-later",
   "devDependencies": {
     "eslint": "^9.13.0",
-    "globals": "^15.11.0"
+    "globals": "^15.11.0",
+    "typescript": "^5.6.3"
   }
 }

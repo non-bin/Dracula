@@ -1,7 +1,10 @@
+import Screen from './screen.js';
 import * as utils from './utilities.js';
 
 /**
  * Called when a counter's edit button, or move/resize buttons are pressed
+ *
+ *  { (counter: Counter, params?: { event: string; direction: string | undefined; } | undefined): boolean; (counter: Counter, params?: { event: string; direction: string | undefined; } | undefined): boolean; } | undefined
  *
  * @callback CounterEditHandler
  * @param {Counter} counter
@@ -48,6 +51,7 @@ import * as utils from './utilities.js';
  */
 
 export default class Counter {
+  /** @type {Screen} */ #screen;
   /** @type {String} */ #name;
   /** @type {CounterState} */ #state;
   /** @type {CounterPhase[]} */ #phases;
@@ -65,10 +69,12 @@ export default class Counter {
    * @param {Object} params
    * @param {HTMLElement} params.screenElement
    * @param {CounterConfig} params.config
-   * @param {CounterEditHandler?} params.editHandler
+   * @param {Screen} params.screen
+   * @param {CounterEditHandler|undefined} params.editHandler
    */
   constructor(params) {
-    const { screenElement, config, editHandler = null } = params;
+    const { screenElement, config, screen, editHandler = undefined } = params;
+    this.#screen = screen;
     this.#state = { value: 0 };
 
     // Main element
@@ -246,7 +252,7 @@ export default class Counter {
       '--color',
       utils.retIfNotSame(
         newColor || this.#phases?.[this.#state.phase].color || this.#color,
-        window.screenColor
+        this.#screen.screenColor
       ) || 'color-mix(in oklab, var(--screen-color), rgba(192, 192, 192) 37%)'
     );
   }

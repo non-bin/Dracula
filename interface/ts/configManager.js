@@ -7,7 +7,7 @@ import exampleConfigs from './exampleConfigs.js';
 export default class ConfigManager {
   /** @type {String} */ #currentConfigID;
   /** @type {ScreenConfig[]} */ #configs;
-  /** @type {ScreenConfig|null} */ config;
+  /** @type {ScreenConfig} */ config;
 
   /**
    * Initialise the config storage if not done already, then load either the
@@ -68,6 +68,10 @@ export default class ConfigManager {
       return true;
     }
     return false;
+  }
+
+  newConfig(json) {
+    throw new Error('TODO'); // TODO
   }
 
   saveChanges() {

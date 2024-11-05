@@ -1,61 +1,52 @@
 import * as utils from './utilities.js';
 import ConfigManager from './configManager.js';
-import Counter from './counter.js';
+import Counter, {
+  CounterConfig,
+  CounterEditHandler,
+  CounterLayout,
+  CounterState
+} from './counter.js';
 import HistoryManager from './historyManager.js';
 
-/**
- * @typedef {import('./counter.js').CounterEditHandler} CounterEditHandler
- * @typedef {import('./counter.js').CounterLayout} CounterLayout
- * @typedef {import('./counter.js').CounterConfig} CounterConfig
- */
+export type ScreenGrid = {
+  rows: string[];
+  columns: string[];
+};
 
-/**
- * @typedef {Object} ScreenGrid
- * @property {String[]} rows
- * @property {String[]} columns
- */
+export type ScreenConfig = {
+  grid?: ScreenGrid;
+  color?: string;
+  counters?: { [s: string]: CounterConfig };
+};
 
-/**
- * @typedef {Object} ScreenConfig
- * @property {ScreenGrid?} grid
- * @property {String?} color
- * @property {Object.<string, CounterConfig>} counters
- */
+export type PostResetCallback = (config: ScreenConfig, screen?: Screen) => void;
 
-/**
- * @callback PostResetCallback
- *
- * @param {ScreenConfig} config
- * @param {Screen} screen
- */
-
-/**
- * @typedef {Object} ScreenGridUpdateOptions
- * @property {Number?} updateOptions.row
- * @property {Number?} updateOptions.column
- * @property {String} updateOptions.newSize
- */
+export type ScreenGridUpdateOptions = {
+  row?: number;
+  column?: number;
+  newSize: string;
+};
 
 export default class Screen {
   #screenElement = document.getElementById('screen');
 
-  /** @type {Counter[]} */ #counters;
-  /** @type {HistoryManager} */ #history;
-  /** @type {CounterEditHandler} */ #editHandler;
-  /** @type {PostResetCallback } */ #postResetCallback;
-  /** @type {ScreenConfig} */ #config;
-  /** @type {ConfigManager} */ #configManager;
+  #counters!: { [s: string]: Counter };
+  #history!: HistoryManager;
+  #editHandler: CounterEditHandler | undefined;
+  #postResetCallback: PostResetCallback | undefined;
+  #config: ScreenConfig;
+  #configManager: ConfigManager;
+  screenColor!: string;
 
-  /**
-   * @param {Number?} historyLength
-   * @param {CounterEditHandler?} editHandler
-   * @param {PostResetCallback?} postResetCallback
-   */
-  constructor(historyLength, editHandler = null, postResetCallback = null) {
+  constructor(
+    historyLength?: number,
+    editHandler?: CounterEditHandler,
+    postResetCallback?: PostResetCallback
+  ) {
     this.#editHandler = editHandler;
     this.#postResetCallback = postResetCallback;
 
-    const searchParams = new URL(window.location).searchParams;
+    const searchParams = new URL(window.location.href).searchParams;
     this.#configManager = new ConfigManager(searchParams.get('configID'));
 
     if (searchParams.get('resetConfigs')) {
@@ -63,12 +54,13 @@ export default class Screen {
     }
 
     if (searchParams.get('config')) {
-      this.#configManager.config = searchParams.get('config');
+      this.#configManager.newConfig(searchParams.get('config'));
     }
 
     this.#config = this.#configManager.config;
 
     document.addEventListener('keydown', (event) => {
+      if (!(event.target instanceof HTMLElement)) return;
       if (event.target.nodeName === 'BODY' && !event.ctrlKey && !event.altKey) {
         if (event.key === ' ') {
           event.preventDefault();
@@ -93,21 +85,20 @@ export default class Screen {
     });
   }
 
-  /**
-   * Get the current screen grid config
-   *
-   * @returns {ScreenGrid}
-   */
-  getGrid() {
-    return structuredClone(this.#config.grid);
+  /** Get the current screen grid config */
+  getGrid(): ScreenGrid {
+    return (
+      structuredClone(this.#config.grid) || {
+        rows: ['auto'],
+        columns: ['auto']
+      }
+    );
   }
 
-  /**
-   * Set a new grid layout for the screen, and render the changes
-   *
-   * @param {ScreenGrid} grid
-   */
-  setGrid(grid) {
+  /** Set a new grid layout for the screen, and render the changes */
+  setGrid(grid: ScreenGrid) {
+    if (!this.#screenElement) throw new Error('Screen element not found');
+
     this.#config.grid = grid;
 
     // CSS grid-template: 'rowWidth rowWidth ... / columnHeight columnHeight ...'
@@ -138,18 +129,17 @@ export default class Screen {
     this.#screenElement.style.gridTemplate = template;
   }
 
-  /**
-   * Make a change to the screen grid, then save, render, and return the new grid
-   *
-   * @param {ScreenGridUpdateOptions} updateOptions
-   * @returns {ScreenGrid}
-   */
-  updateGrid(updateOptions) {
+  /** Make a change to the screen grid, then save, render, and return the new grid */
+  updateGrid(updateOptions: ScreenGridUpdateOptions): ScreenGrid {
+    if (!this.#config.grid) {
+      this.#config.grid = { rows: ['auto'], columns: ['auto'] };
+    }
+
     const row = updateOptions.row;
     const column = updateOptions.column;
 
     let newSize = updateOptions.newSize;
-    if (/^\d+$/v.test(newSize)) {
+    if (/^\d+$/.test(newSize)) {
       newSize += 'rem'; // Default units
     }
 
@@ -161,16 +151,17 @@ export default class Screen {
 
     this.setGrid(this.#config.grid);
 
-    return this.getGrid();
+    return this.#config.grid;
   }
 
-  /**
-   * Loop through all counters, increment them, and save the old state to the history
-   */
+  /** Loop through all counters, increment them, and save the old state to the history */
   incrementAll() {
-    const states = {};
+    const states: { [s: string]: CounterState } = {};
     for (const counterID in this.#counters) {
-      if (Object.hasOwn(this.#counters, counterID)) {
+      if (
+        Object.hasOwn(this.#counters, counterID) &&
+        this.#counters[counterID]
+      ) {
         states[counterID] = this.#counters[counterID].increment();
       }
     }
@@ -178,9 +169,7 @@ export default class Screen {
     this.#history.push(states);
   }
 
-  /**
-   * Take a state from the history and apply it
-   */
+  /** Take a state from the history and apply it */
   undo() {
     const newStates = this.#history.pop();
     if (!newStates) {
@@ -190,7 +179,7 @@ export default class Screen {
 
     for (const counterID in newStates) {
       if (Object.hasOwn(newStates, counterID)) {
-        this.#counters[counterID].revert(newStates[counterID]);
+        this.#counters[counterID]?.revert(newStates[counterID]);
       }
     }
   }
@@ -198,11 +187,11 @@ export default class Screen {
   /**
    * Overwrite the current counters and states, with the initial state from config
    * (Called when the page loads, or when the user requests a reset)
-   *
-   * @param {Number?} historyLength
    */
-  reset(historyLength) {
+  reset(historyLength?: number) {
     try {
+      if (!this.#screenElement) throw new Error('Screen element not found');
+
       this.#counters = {};
       this.#history = new HistoryManager(historyLength);
 
@@ -210,17 +199,18 @@ export default class Screen {
 
       this.#screenElement.innerHTML = '';
       this.setGrid(this.#config.grid || { rows: ['auto'], columns: ['auto'] });
-      window.screenColor = this.#config.color || 'white';
-      this.#screenElement.style.setProperty(
-        '--screen-color',
-        window.screenColor
-      );
+      this.screenColor = this.#config.color || 'white';
+      this.#screenElement.style.setProperty('--screen-color', this.screenColor);
 
       for (const counterID in this.#config.counters) {
-        if (Object.hasOwn(this.#config.counters, counterID)) {
+        if (
+          Object.hasOwn(this.#config.counters, counterID) &&
+          this.#config.counters[counterID]
+        ) {
           this.#counters[counterID] = new Counter({
             screenElement: this.#screenElement,
             config: this.#config.counters[counterID],
+            screen: this,
             editHandler: this.#editHandler
           });
         }
@@ -232,27 +222,18 @@ export default class Screen {
     }
   }
 
-  /**
-   * @returns {String[]} List of the IDs of all saved configs
-   */
-  getAvailableConfigIDs() {
+  getAvailableConfigIDs(): string[] {
     return this.#configManager.getAvailableConfigsList();
   }
 
-  /**
-   * @returns {String}
-   */
-  getCurrentConfigID() {
+  getCurrentConfigID(): string {
     return this.#configManager.currentConfigID;
   }
 
   /**
-   * Returns false if the switch failed
-   *
-   * @param {String} configID
-   * @returns {ScreenConfig|false}
+   * Returns false if the switch failed, true if successful
    */
-  switchConfig(configID) {
+  switchConfig(configID: string): boolean {
     if (!this.#configManager.switchConfig(configID)) return false;
 
     this.reset();
@@ -279,11 +260,8 @@ export default class Screen {
 
   /**
    * Validate and save a user preference
-   *
-   * @param {String} key
-   * @param {*} value
    */
-  static setPreference(key, value) {
+  static setPreference(key: string, value: any) {
     if (typeof key !== 'string') {
       throw new Error('Key must be a string');
     }
@@ -304,12 +282,9 @@ export default class Screen {
   }
 
   /**
-   * Get a user preference, or the default value if undefined
-   *
-   * @param {String} key
-   * @returns {*}
+   * Get a user preference, or the default value if null
    */
-  static getPreference(key) {
+  static getPreference(key: string): any {
     const preferenceValue = ConfigManager.getPreference(key);
 
     switch (key) {

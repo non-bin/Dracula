@@ -1,6 +1,6 @@
 import { ScreenConfig } from './screen';
 
-const exampleConfigs: { [s: string]: ScreenConfig } = {
+export const exampleConfigs: { [s: string]: ScreenConfig } = {
   minimal: {
     counters: {
       main: {}
@@ -71,3 +71,5 @@ const exampleConfigs: { [s: string]: ScreenConfig } = {
     }
   }
 };
+
+export default exampleConfigs;

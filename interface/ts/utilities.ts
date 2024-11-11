@@ -1,12 +1,8 @@
 /**
  * If a===b return false, otherwise return a
- *
- * @param {*} a
- * @param {*} b
- * @return {*}
  */
 // eslint-disable-next-line id-length
-export const retIfNotSame = (a, b) => {
+export const retIfNotSame = (a: any, b: any): any => {
   if (a === b) {
     return false;
   }
@@ -35,7 +31,7 @@ export const mobileOrTabletCheck = () => {
     ) {
       check = true;
     }
-  })(navigator.userAgent || navigator.vendor || window.opera);
+  })(navigator.userAgent || navigator.vendor || (window as any).opera);
   /* eslint-enable */
   return check;
 };
@@ -43,24 +39,24 @@ export const mobileOrTabletCheck = () => {
 export const requestFullscreen = () => {
   if (document.documentElement.requestFullscreen) {
     document.documentElement.requestFullscreen();
-  } else if (document.documentElement.webkitRequestFullscreen) {
+  } else if ((document.documentElement as any).webkitRequestFullscreen) {
     /* Safari */
-    document.documentElement.webkitRequestFullscreen();
-  } else if (document.documentElement.msRequestFullscreen) {
+    (document.documentElement as any).webkitRequestFullscreen();
+  } else if ((document.documentElement as any).msRequestFullscreen) {
     /* IE11 */
-    document.documentElement.msRequestFullscreen();
+    (document.documentElement as any).msRequestFullscreen();
   }
 };
 
 export const requestCloseFullscreen = () => {
   if (document.exitFullscreen) {
     document.exitFullscreen();
-  } else if (document.webkitExitFullscreen) {
+  } else if ((document as any).webkitExitFullscreen) {
     /* Safari */
-    document.webkitExitFullscreen();
-  } else if (document.msExitFullscreen) {
+    (document as any).webkitExitFullscreen();
+  } else if ((document as any).msExitFullscreen) {
     /* IE11 */
-    document.msExitFullscreen();
+    (document as any).msExitFullscreen();
   }
 };
 
@@ -72,22 +68,38 @@ export const requestToggleFullscreen = () => {
   }
 };
 
-export const log = (obj) => {
+export const log = (obj: any) => {
+  const errorElement = document.getElementById('error');
+  if (!errorElement) {
+    alert('Error element not found');
+    throw new Error('Error element not found');
+  }
+
   if (obj instanceof Error) {
-    document.getElementById('error').innerText = obj.message;
+    errorElement.innerText = obj.message;
     console.error(obj); // eslint-disable-line no-console
   }
 };
 
+export type primitiveTypeString =
+  | 'undefined'
+  | 'object'
+  | 'boolean'
+  | 'number'
+  | 'bigint'
+  | 'string'
+  | 'symbol'
+  | 'function'
+  | 'object';
+
 /**
  * Ensure a value is of the correct type, and return the fallback if invalid
- *
- * @param {*} value
- * @param {'object'|'boolean'|'number'|'bigint'|'string'|'symbol'|'function'|'object'} type
- * @param {*} fallback
- * @returns {*}
  */
-export const fallbackIfInvalidType = (value, type, fallback) => {
+export const fallbackIfInvalidType = (
+  value: any,
+  type: primitiveTypeString,
+  fallback: any
+): any => {
   if (typeof value !== type) {
     return fallback;
   }
@@ -97,13 +109,12 @@ export const fallbackIfInvalidType = (value, type, fallback) => {
 
 /**
  * Ensure a value is in the list of allowed values, and return the fallback if invalid
- *
- * @param {*} value
- * @param {Array} type
- * @param {*} fallback
- * @returns {*}
  */
-export const fallbackIfInvalidValue = (value, allowedValues, fallback) => {
+export const fallbackIfInvalidValue = (
+  value: any,
+  allowedValues: any[],
+  fallback: any
+): any => {
   if (!allowedValues.includes(value)) {
     return fallback;
   }
@@ -113,11 +124,8 @@ export const fallbackIfInvalidValue = (value, allowedValues, fallback) => {
 
 /**
  * Throw a type error if value is not the specified type
- *
- * @param {*} value
- * @param {('object'|'boolean'|'number'|'bigint'|'string'|'symbol'|'function'|'object')} type
  */
-export const assertType = (value, type) => {
+export const assertType = (value: any, type: primitiveTypeString) => {
   if (typeof value !== type) {
     throw new TypeError(`Value must be of type${type}`);
   }
@@ -125,11 +133,10 @@ export const assertType = (value, type) => {
 
 /**
  * Convert a position from pixels to a proportion of the screen size
- *
- * @param {Number[]} positionCoordinates
- * @returns {Number[]}
  */
-export const getPositionAsProportion = (positionCoordinates) => {
+export const getPositionAsProportion = (
+  positionCoordinates: [x: number, y: number]
+): [x: number, y: number] => {
   const [posX, posY] = positionCoordinates;
   const windowWidth = window.screen.availWidth;
   const windowHeight = window.screen.availHeight;

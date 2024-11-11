@@ -1,9 +1,23 @@
 import { ScreenConfig } from './screen';
 
-export const exampleConfigs: { [s: string]: ScreenConfig } = {
+export const exampleConfigs: { [id: string]: ScreenConfig } = {
   minimal: {
     counters: {
       main: {}
+    }
+  },
+  test: {
+    grid: { rows: ['auto'], columns: ['auto'] },
+    color: 'black',
+    counters: {
+      phase: {
+        name: 'Phase',
+        max: 15,
+        phases: [
+          { name: 'Hem', max: 30 },
+          { name: 'Waste Yarn', max: Infinity }
+        ]
+      }
     }
   },
   basic: {

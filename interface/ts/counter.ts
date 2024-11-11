@@ -2,78 +2,78 @@ import Screen from './screen.js';
 import * as utils from './utilities.js';
 
 /**
- * Called when a counter's edit button, or move/resize buttons are pressed
- *
- *  { (counter: Counter, params?: { event: string; direction: string | undefined; } | undefined): boolean; (counter: Counter, params?: { event: string; direction: string | undefined; } | undefined): boolean; } | undefined
- *
- * @callback CounterEditHandler
- * @param {Counter} counter
- * @param {Object} [params=]
- * @param {String} params.event
- * @param {String?} params.direction
- * @return {Boolean} False if failed, true otherwise
+ * Called when a counter's edit button, or move/resize buttons are pressed.
+ * Returns false if failed, true otherwise
  */
+export type CounterEditHandler = (
+  counter: Counter,
+  params?: { event: string; direction?: string }
+) => boolean;
 
 /**
- * Describes the location and size of a counter
- *
- * @typedef {Object} CounterLayout
- * @property {[x:Number,y:Number]} location 0,0 is the top left
- * @property {[width:Number,height:Number]} size
- * 0,0 is 1x1
- *
- * 2,3 is 3x4
+ * Describe the location and size of a counter.
+ * The location [0,0] is the top left.
+ * The size [0,0] is 1x1, [1,1] is 2x2, etc.
  */
+export type CounterLayout = {
+  location: [x: number, y: number];
+  size: [width: number, height: number];
+};
 
 /**
- * The current state of the counter
- *
- * @typedef {Object} CounterState
- * @property {Number} value
- * @property {Number?} max
- * @property {Number?} phase
+ * The current state of a counter
  */
+export type CounterState = {
+  value: number;
+  max?: number;
+  phase?: number;
+};
 
 /**
- * Describes the behavious or a counter phase
- * @typedef {Object} CounterPhase
- * @property {String?} name
- * @property {Number?} max
- * @property {String?} color
+ * Describes the config of a counter phase
  */
+export type CounterPhase = {
+  name?: string;
+  max?: number;
+  color?: string;
+};
 
 /**
- * @typedef {Object} CounterConfig
- * @property {String?} name
- * @property {CounterLayout?} layout
- * @property {CounterPhase[]?} phases
- * @property {String?} color
+ * Describes the config of a counter
  */
+export type CounterConfig = {
+  name?: string;
+  layout?: CounterLayout;
+  phases?: CounterPhase[];
+  color?: string;
+  max?: number;
+};
 
 export default class Counter {
-  /** @type {Screen} */ #screen;
-  /** @type {String} */ #name;
-  /** @type {CounterState} */ #state;
-  /** @type {CounterPhase[]} */ #phases;
-  /** @type {Number} */ #max;
-  /** @type {String} */ #color;
-  /** @type {Object.<string, HTMLElement>[]} */ #elements = {};
+  #screen: Screen;
+  #name: string;
+  #state: CounterState;
+  #phases: CounterPhase[];
+  #max: number;
+  #color?: string;
+  #elements: { [key: string]: HTMLElement } = {};
+  #layout: CounterLayout;
+  // = {
+  //   location: [0, 0],
+  //   size: [0, 0]
+  // };
 
-  /** @type {CounterLayout} */
-  #layout = {
-    location: [0, 0],
-    size: [0, 0]
-  };
-
-  /**
-   * @param {Object} params
-   * @param {HTMLElement} params.screenElement
-   * @param {CounterConfig} params.config
-   * @param {Screen} params.screen
-   * @param {CounterEditHandler|undefined} params.editHandler
-   */
-  constructor(params) {
-    const { screenElement, config, screen, editHandler = undefined } = params;
+  constructor({
+    screenElement,
+    config,
+    screen,
+    editHandler
+  }: {
+    screenElement: HTMLElement;
+    config: CounterConfig;
+    screen: Screen;
+    editHandler?: CounterEditHandler;
+  }) {
     this.#screen = screen;
     this.#state = { value: 0 };
 
@@ -81,15 +81,15 @@ export default class Counter {
     this.#layout = config.layout || { location: [0, 0], size: [0, 0] };
     const mainElement = document.createElement('div');
     mainElement.className = 'counter';
-    this.#elements.main = screenElement.appendChild(mainElement);
+    this.#elements['main'] = screenElement.appendChild(mainElement);
     this.setLayout(this.#layout);
 
     // Name element
-    this.#name = config.name;
+    this.#name = config.name || '';
     const nameElement = document.createElement('div');
     nameElement.classList.add('counter_text', 'counter_name');
     nameElement.textContent = this.#name;
-    this.#elements.name = mainElement.appendChild(nameElement);
+    this.#elements['name'] = mainElement.appendChild(nameElement);
 
     // If this counter has phases
     if (config.phases) {
@@ -99,19 +99,22 @@ export default class Counter {
       this.#phases = config.phases;
       const phaseElement = document.createElement('div');
       phaseElement.classList.add('counter_text', 'counter_phase');
-      phaseElement.textContent = this.#phases[0].name;
-      this.#elements.phase = mainElement.appendChild(phaseElement);
+      phaseElement.textContent = this.#phases[0]?.name || '';
+      this.#elements['phase'] = mainElement.appendChild(phaseElement);
+    } else {
+      this.#phases = [];
     }
 
     // Value element
     const valueElement = document.createElement('div');
     valueElement.classList.add('counter_text', 'counter_value');
-    valueElement.textContent = 0;
-    this.#elements.value = mainElement.appendChild(valueElement);
+    valueElement.textContent = '0';
+    this.#elements['value'] = mainElement.appendChild(valueElement);
 
     // Setup the initial maximum
-    if (config.max || this.#phases?.[0]?.max) {
-      this.#max = config.max;
+    this.#max = Infinity;
+    if (config.max || this.#phases[0]?.max) {
+      this.#max = config.max || Infinity;
 
       this.updateCounterMax();
 
@@ -119,7 +122,7 @@ export default class Counter {
       const maxElement = document.createElement('div');
       maxElement.classList.add('counter_text', 'counter_max');
       maxElement.textContent = `/${this.#state.max}`;
-      this.#elements.max = mainElement.appendChild(maxElement);
+      this.#elements['max'] = mainElement.appendChild(maxElement);
     }
 
     // Set up edit mode if needed
@@ -130,7 +133,7 @@ export default class Counter {
       editButtonElement.addEventListener('click', () => {
         editHandler(this);
       });
-      this.#elements.editButton = mainElement.appendChild(editButtonElement);
+      this.#elements['editButton'] = mainElement.appendChild(editButtonElement);
 
       this.addMoveButtons(editHandler, 'move');
       this.addMoveButtons(editHandler, 'resize');
@@ -140,18 +143,20 @@ export default class Counter {
   }
 
   /**
-   * Called when a counter is rendered in the editor (created with an {@link CounterEditHandler})
+   * Called when a counter is rendered in the editor (created with an {@link CounterEditHandler}).
    * Adds arrow buttons to move and resize the counter
    *
-   * @param {CounterEditHandler} editHandler
-   * @param {String?} moveType Default: `move`
-   * @param {String?} cssClass Default: `${moveType}-buttons`
+   * moveType defaults to `move`
+   *
+   * cssClass defaults to `${moveType}-buttons`
    */
   addMoveButtons(
-    editHandler,
-    moveType = 'move',
-    cssClass = `${moveType}-buttons`
+    editHandler: CounterEditHandler,
+    moveType: string = 'move',
+    cssClass: string = `${moveType}-buttons`
   ) {
+    if (!this.#elements['main']) throw new Error('Main element not found');
+
     const moveButtonsElement = document.createElement(`div`);
     moveButtonsElement.classList.add(cssClass, 'move-button-container');
 
@@ -161,56 +166,62 @@ export default class Counter {
       .appendChild(document.createElement('span'))
       .classList.add('arrow');
 
-    let button;
-    button = moveButtonsElement.appendChild(buttonTemplate.cloneNode(true));
+    let button: HTMLDivElement;
+    button = moveButtonsElement.appendChild(
+      buttonTemplate.cloneNode(true) as HTMLDivElement
+    );
     button.classList.add('up-arrow');
     button.addEventListener('click', () => {
       editHandler(this, { event: moveType, direction: 'up' });
     });
-    button = moveButtonsElement.appendChild(buttonTemplate.cloneNode(true));
+    button = moveButtonsElement.appendChild(
+      buttonTemplate.cloneNode(true) as HTMLDivElement
+    );
     button.classList.add('down-arrow');
     button.addEventListener('click', () => {
       editHandler(this, { event: moveType, direction: 'down' });
     });
-    button = moveButtonsElement.appendChild(buttonTemplate.cloneNode(true));
+    button = moveButtonsElement.appendChild(
+      buttonTemplate.cloneNode(true) as HTMLDivElement
+    );
     button.classList.add('left-arrow');
     button.addEventListener('click', () => {
       editHandler(this, { event: moveType, direction: 'left' });
     });
-    button = moveButtonsElement.appendChild(buttonTemplate.cloneNode(true));
+    button = moveButtonsElement.appendChild(
+      buttonTemplate.cloneNode(true) as HTMLDivElement
+    );
     button.classList.add('right-arrow');
     button.addEventListener('click', () => {
       editHandler(this, { event: moveType, direction: 'right' });
     });
 
-    this.#elements.move ||= {};
-    this.#elements.move[moveType] =
-      this.#elements.main.appendChild(moveButtonsElement);
+    this.#elements[moveType] =
+      this.#elements['main'].appendChild(moveButtonsElement);
   }
 
   /**
    * Overwrite this counter's layout with a new one
-   *
-   * @param {CounterLayout} layout
    */
-  setLayout(layout) {
+  setLayout(layout: CounterLayout) {
+    if (!this.#elements['main']) throw new Error('Main element not found');
+
     const x1 = layout.location[0] + 1; // CSS Grid locations are 1 indexed
     const y1 = layout.location[1] + 1;
     const x2 = x1 + layout.size[0] + 1; // Decided width should be 0 indexed
     const y2 = y1 + layout.size[1] + 1;
 
-    this.#elements.main.style.gridArea = `${y1} / ${x1} / ${y2} / ${x2}`;
+    this.#elements['main'].style.gridArea = `${y1} / ${x1} / ${y2} / ${x2}`;
   }
 
   /**
    * Move or resize the counter. Performs the move and returns the new layout.
    * (called by the {@link CounterEditHandler})
-   *
-   * @param {('move'|'resize')} moveOrResize
-   * @param {('up'|'down'|'left'|'right')} direction
-   * @returns {CounterLayout} New layout
    */
-  updateLayout(moveOrResize, direction) {
+  updateLayout(
+    moveOrResize: 'move' | 'resize',
+    direction: 'up' | 'down' | 'left' | 'right'
+  ): CounterLayout {
     let positionOrSize;
 
     // Get the appropriate object, to edit in the next step
@@ -244,14 +255,19 @@ export default class Counter {
 
   /**
    * Decide on and set a color, based on phase, default color, and screen color
-   *
-   * @param {String?} newColor
    */
-  updateCounterColor(newColor) {
-    this.#elements.main.style.setProperty(
+  updateCounterColor(newColor?: string) {
+    if (!this.#elements['main']) throw new Error('Main element not found');
+
+    let phaseColor: string = '';
+    if (this.#state.phase !== undefined) {
+      phaseColor = this.#phases?.[this.#state.phase]?.color || '';
+    }
+
+    this.#elements['main'].style.setProperty(
       '--color',
       utils.retIfNotSame(
-        newColor || this.#phases?.[this.#state.phase].color || this.#color,
+        newColor || phaseColor || this.#color,
         this.#screen.screenColor
       ) || 'color-mix(in oklab, var(--screen-color), rgba(192, 192, 192) 37%)'
     );
@@ -259,41 +275,48 @@ export default class Counter {
 
   /**
    * Decide on and set a max, based on phase and default max
-   *
-   * @param {Number?} newMax
    */
-  updateCounterMax(newMax) {
+  updateCounterMax(newMax?: number) {
+    let phaseMax = 0;
+    if (this.#state.phase !== undefined) {
+      phaseMax = this.#phases[this.#state.phase]?.max || 0;
+    }
+
     this.#state.max =
-      newMax || this.#phases?.[this.#state.phase].max || this.#max || Infinity;
+      // newMax || this.#phases?.[this.#state.phase].max || this.#max || Infinity;
+      newMax || phaseMax || this.#max || Infinity;
   }
 
   /**
    * Update displayed color, max, phase, and value
-   *
-   * @param {String?} newColor
-   * @param {Number?} newMax
    */
-  render(newColor, newMax) {
+  render(newColor?: string, newMax?: number) {
+    if (!this.#elements['value']) throw new Error('Value element not found');
+
     this.updateCounterColor(newColor);
     this.updateCounterMax(newMax);
 
-    if (this.#phases) {
-      this.#elements.phase.textContent = this.#phases[this.#state.phase].name;
+    if (this.#phases.length > 0) {
+      if (!this.#elements['phase']) throw new Error('Phase element not found');
+      if (typeof this.#state.phase === 'undefined')
+        throw new Error('Phase not found');
+      this.#elements['phase'].textContent =
+        this.#phases[this.#state.phase]?.name || '';
     }
 
-    if (this.#elements.max) {
-      this.#elements.max.textContent = `/${this.#state.max}`;
+    if (this.#elements['max']) {
+      this.#elements['max'].textContent = `/${this.#state.max}`;
     }
 
-    this.#elements.value.textContent = this.#state.value;
+    this.#elements['value'].textContent = this.#state.value.toString();
   }
 
   /**
    * Increment the counter, reset if we've reached the max, and change phase if needed
-   *
-   * @returns {CounterState} The previous state, to be saved in the history
    */
-  increment() {
+  increment(): CounterState {
+    if (!this.#elements['value']) throw new Error('Value element not found');
+
     const oldState = structuredClone(this.#state);
 
     this.#state.value++;
@@ -302,16 +325,19 @@ export default class Counter {
     (() => {
       if (!this.#state.max || this.#state.value < this.#state.max) {
         // No max, or haven't reached it yet
-        this.#elements.value.textContent = this.#state.value;
+        this.#elements['value'].textContent = this.#state.value.toString();
         return;
       }
 
       this.#state.value = 0;
 
       if (!this.#phases) {
-        this.#elements.value.textContent = this.#state.value;
+        this.#elements['value'].textContent = this.#state.value.toString();
         return;
       }
+
+      if (typeof this.#state.phase === 'undefined')
+        throw new Error('Phase not found');
 
       this.#state.phase++;
 
@@ -327,10 +353,8 @@ export default class Counter {
 
   /**
    * Set the counter's state. Used to undo
-   *
-   * @param {CounterState} state
    */
-  revert(state) {
+  revert(state: CounterState) {
     this.#state = structuredClone(state);
     this.render();
   }

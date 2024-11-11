@@ -30,13 +30,13 @@ export type ScreenGridUpdateOptions = {
 export default class Screen {
   #screenElement = document.getElementById('screen');
 
-  #counters!: { [s: string]: Counter };
-  #history!: HistoryManager;
+  #counters: { [s: string]: Counter };
+  #history: HistoryManager;
   #editHandler: CounterEditHandler | undefined;
   #postResetCallback: PostResetCallback | undefined;
   #config: ScreenConfig;
   #configManager: ConfigManager;
-  screenColor!: string;
+  screenColor: string;
 
   constructor(
     historyLength?: number,

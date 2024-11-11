@@ -9,6 +9,8 @@ const screen = new Screen(HISTORY_LENGTH);
 
 const modalElement = document.getElementById('modal');
 const modalCloseElement = document.getElementById('modal-close');
+if (!modalElement) throw new Error('Modal element not found');
+if (!modalCloseElement) throw new Error('Modal close element not found');
 
 const showModal = () => {
   modalElement.style.display = 'block';
@@ -18,9 +20,9 @@ const hideModal = () => {
   modalElement.style.display = 'none';
 };
 
-let longTouchTimer;
-let speedModeTimer;
-let touchPosition;
+let longTouchTimer: number | null;
+let speedModeTimer: number | null;
+let touchPosition: [x: number, y: number];
 
 const longTouch = () => {
   const positionAsProportion = utils.getPositionAsProportion(touchPosition);
@@ -55,10 +57,7 @@ const handleClick = () => {
   }
 };
 
-/**
- * @param {TouchEvent} touchEvent
- */
-const touchStart = (touchEvent) => {
+const touchStart = (touchEvent: TouchEvent) => {
   // FIXME: When this is enabled, the click event doesn't fire
   // but requestFullscreen is unreliable when called from touchstart #12
   // so we need to use the click event instead
@@ -66,21 +65,20 @@ const touchStart = (touchEvent) => {
   // touchEvent.preventDefault(); // Prevent the browser from processing emulated mouse events
 
   const touch = touchEvent.targetTouches.item(0);
+  if (!touch) return;
+
   touchPosition = [touch.clientX, touch.clientY];
 
   longTouchTimer = setTimeout(longTouch, LONG_TOUCH_DURATION, touchEvent);
 };
 
-/**
- * @param {TouchEvent} touchEvent
- */
-const touchEnd = (touchEvent) => {
+const touchEnd = (touchEvent: TouchEvent) => {
   if (longTouchTimer) {
     // Lifted finger before long touch
     clearTimeout(longTouchTimer);
     longTouchTimer = null;
 
-    shortTouch(touchEvent);
+    shortTouch();
   } /* else {
     // Lifted finger after long touch
   } */
@@ -108,6 +106,8 @@ const touchCancel = () => {
 
 if (utils.mobileOrTabletCheck()) {
   const touchCatcherElement = document.getElementById('touchCatcher');
+  if (!touchCatcherElement) throw new Error('Touch catcher element not found');
+
   touchCatcherElement.style.display = 'block';
   window.addEventListener('click', handleClick, false);
   touchCatcherElement.addEventListener('touchstart', touchStart, false);
@@ -125,21 +125,29 @@ window.addEventListener('click', (event) => {
   }
 });
 
-document.getElementById('backToEditorButton').addEventListener('click', () => {
-  const newURL = new URL('./editor.html', window.location);
+const backToEditorButtonElement = document.getElementById('backToEditorButton');
+if (!backToEditorButtonElement)
+  throw new Error('Back to editor button element not found');
+backToEditorButtonElement.addEventListener('click', () => {
+  const newURL = new URL('./editor.html', window.location.href);
   newURL.searchParams.set('configID', screen.getCurrentConfigID());
-  window.location = newURL;
+  window.location.href = newURL.href;
 });
-document.getElementById('resetButton').addEventListener('click', () => {
+const resetButtonElement = document.getElementById('resetButton');
+if (!resetButtonElement) throw new Error('Reset button element not found');
+resetButtonElement.addEventListener('click', () => {
   screen.reset(HISTORY_LENGTH);
   hideModal();
 });
 
-document
-  .getElementById('fullscreenToggle')
-  .addEventListener('click', (event) => {
-    event.target.classlist.toggle('checked');
+const fullscreenToggleElement = document.getElementById('fullscreenToggle');
+if (!fullscreenToggleElement)
+  throw new Error('Fullscreen toggle element not found');
 
-    const checked = event.target.classList.contains('checked');
-    Screen.setPreference('mobileFullscreen', checked);
-  });
+fullscreenToggleElement.addEventListener('click', (event) => {
+  if (!(event.target instanceof HTMLElement)) return;
+  event.target.classList.toggle('checked');
+
+  const checked = event.target.classList.contains('checked');
+  Screen.setPreference('mobileFullscreen', checked);
+});
